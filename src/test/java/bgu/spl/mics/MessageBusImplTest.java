@@ -6,16 +6,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
-
+    MessageBus messageBus;
     @BeforeEach
     void setUp() {
-
+         messageBus = new MessageBusImpl();
     }
 
     @Test
     void subscribeEvent() {
         // Arrange
-        MessageBus messageBus = new MessageBusImpl();
         MicroService microService = new MicroService("TestMicroService") {
             @Override
             protected void initialize() {

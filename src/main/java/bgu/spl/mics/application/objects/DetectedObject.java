@@ -1,10 +1,17 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.List;
+
 /**
  * DetectedObject represents an object detected by the camera.
  * It contains information such as the object's ID and description.
  */
 public class DetectedObject {
+    private String id;
+    private String description;
 
-    // TODO: Define fields and methods.
+    public DetectedObject(String id, String description) {
+        this.id = id;
+        this.description = description;
+    }
 }
