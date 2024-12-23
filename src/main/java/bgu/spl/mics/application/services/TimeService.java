@@ -7,7 +7,7 @@ import bgu.spl.mics.MicroService;
  * at regular intervals and controlling the simulation's duration.
  */
 public class TimeService extends MicroService {
-    
+
     /**
      * Constructor for TimeService.
      *

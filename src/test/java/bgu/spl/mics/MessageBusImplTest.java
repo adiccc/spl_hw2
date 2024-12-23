@@ -9,7 +9,7 @@ class MessageBusImplTest {
     MessageBus messageBus;
     @BeforeEach
     void setUp() {
-         messageBus = new MessageBusImpl();
+         messageBus = MessageBusImpl.getInstance();
     }
 
     @Test
