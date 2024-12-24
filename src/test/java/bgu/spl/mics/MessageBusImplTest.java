@@ -1,5 +1,8 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.objects.Camera;
+import bgu.spl.mics.application.objects.TickBroadcast;
+import bgu.spl.mics.application.services.CameraService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,20 +17,19 @@ class MessageBusImplTest {
 
     @Test
     void subscribeEvent() {
-        // Arrange
-        MicroService microService = new MicroService("TestMicroService") {
-            @Override
-            protected void initialize() {
-            }
-        };
-
-        // Act
-        messageBus.register(microService);
-//        messageBus.subscribeEvent(ExampleEvent.class,microService);
     }
 
     @Test
     void subscribeBroadcast() {
+        // Arrange
+        Camera c=new Camera();
+        MicroService microService = new CameraService(c);
+
+        // Act
+        messageBus.register(microService);
+        messageBus.subscribeBroadcast(TickBroadcast.class,microService);
+
+//        assertEquals(messageBus.isRegisterToBrodcast(microService,Class()),ture);
     }
 
     @Test

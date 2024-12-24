@@ -15,6 +15,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;
 	private ConcurrentHashMap<Event,Future> eventsFuture;
 	private static MessageBusImpl INSTANCE =null;
+
 	private MessageBusImpl(){
 		eventsMapping = new ConcurrentHashMap<>();
 		microQueues = new ConcurrentHashMap<>();
@@ -97,21 +98,25 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void unregister(MicroService m) {
 		if(microQueues.containsKey(m)){
-			microQueues.remove(m);
-			for(BlockingQueue<MicroService> microServices:eventsMapping.values()){
-				for(MicroService b:microServices){
-					if(b.equals(m)){
-						microServices.remove(b);
+			synchronized (microQueues.get(m)) {
+				microQueues.remove(m);
+			}
+				for (BlockingQueue<MicroService> microServices : eventsMapping.values()) {
+					for (MicroService b : microServices) {
+						synchronized (microServices){
+							if (b.equals(m)) {
+								microServices.remove(b);
+							}
+						}
 					}
 				}
-			}
-			for(BlockingQueue<MicroService> microServices:broadcasts.values()){
-				for(MicroService b:microServices){
-					if(b.equals(m)){
-						microServices.remove(b);
+				for (BlockingQueue<MicroService> microServices : broadcasts.values()) {
+					for (MicroService b : microServices) {
+						if (b.equals(m)) {
+							microServices.remove(b);
+						}
 					}
 				}
-			}
 		}
 	}
 
@@ -122,5 +127,14 @@ public class MessageBusImpl implements MessageBus {
 				return t.take();
 			return null;
 		}
+
+	//for test use
+	public  boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
+		if (broadcasts.containsKey(b)){
+			if(broadcasts.get(b).contains(m))
+				return true;
+		}
+		return false;
+	}
 }
 
