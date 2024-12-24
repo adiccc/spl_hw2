@@ -10,4 +10,11 @@ public class GPSIMU {
     private int currentTick;
     private STATUS status;
     private List<Pose> PoseList;
+
+    public Pose getPose(){
+        return PoseList.get(currentTick);
+    }
+    public void setCurrentTick(int tick){
+        currentTick = tick;
+    }
 }

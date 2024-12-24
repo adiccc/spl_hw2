@@ -1,12 +1,10 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.objects.Camera;
-import bgu.spl.mics.application.objects.TickBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.services.CameraService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
     MessageBus messageBus;

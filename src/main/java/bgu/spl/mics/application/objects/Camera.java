@@ -12,4 +12,12 @@ public class Camera {
     private STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
 
+    public Camera(int id, int frequency, STATUS status) {
+        this.id = id;
+        this.frequency = frequency;
+        this.status = status;
+    }
+    public void Detect(int time){//read from json
+
+    }
 }

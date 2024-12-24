@@ -80,8 +80,9 @@ public class MessageBusImpl implements MessageBus {
 		else{
 			BlockingQueue<MicroService> t=eventsMapping.get(e);
 			MicroService temp=t.poll();
-			microQueues.get(temp).add(e);
-			t.add(temp);
+			BlockingQueue<Message> q=microQueues.get(temp);
+			q.add(e);
+			q.notifyAll();
 			Future<T> f=new Future<T>();
 			eventsFuture.put(e,f);
 			return f;
@@ -97,16 +98,15 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) {
-		if(microQueues.containsKey(m)){
+		if(microQueues.containsKey(m)) {
 			synchronized (microQueues.get(m)) {
 				microQueues.remove(m);
+				microQueues.notifyAll();
 			}
 				for (BlockingQueue<MicroService> microServices : eventsMapping.values()) {
 					for (MicroService b : microServices) {
-						synchronized (microServices){
-							if (b.equals(m)) {
-								microServices.remove(b);
-							}
+						if (b.equals(m)) {
+							microServices.remove(b);
 						}
 					}
 				}

@@ -1,12 +1,12 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.Message;
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.objects.Camera;
-import bgu.spl.mics.application.objects.CrashedBroadcast;
-import bgu.spl.mics.application.objects.TerminatedBroadcast;
-import bgu.spl.mics.application.objects.TickBroadcast;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
 
 /**
  * CameraService is responsible for processing data from the camera and
@@ -16,7 +16,7 @@ import bgu.spl.mics.application.objects.TickBroadcast;
  * the system's StatisticalFolder upon sending its observations.
  */
 public class CameraService extends MicroService {
-    private Camera camera;
+    private final Camera camera;
     /**
      * Constructor for CameraService.
      *
@@ -35,8 +35,8 @@ public class CameraService extends MicroService {
      */
     @Override
     protected void initialize() {
-        MessageBusImpl.getInstance().subscribeBroadcast(TickBroadcast.class,this);
-        MessageBusImpl.getInstance().subscribeBroadcast(CrashedBroadcast.class,this);
-        MessageBusImpl.getInstance().subscribeBroadcast(TerminatedBroadcast.class,this);
+       subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> camera.Detect(t.getTime()));
+       subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast c)-> terminate());
+       subscribeBroadcast(TerminatedBroadcast.class,(TerminatedBroadcast c)-> {});//do we need to fix?
     }
 }

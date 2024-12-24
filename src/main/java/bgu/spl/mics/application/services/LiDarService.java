@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.*;
 
 /**
@@ -13,7 +14,7 @@ import bgu.spl.mics.application.objects.*;
  * observations.
  */
 public class LiDarService extends MicroService {
-
+    private LiDarWorkerTracker workerTracker;
     /**
      * Constructor for LiDarService.
      *
@@ -21,7 +22,7 @@ public class LiDarService extends MicroService {
      */
     public LiDarService(LiDarWorkerTracker LiDarWorkerTracker) {
         super("Change_This_Name");
-        // TODO Implement this
+        this.workerTracker = LiDarWorkerTracker;
     }
 
     /**
@@ -31,10 +32,10 @@ public class LiDarService extends MicroService {
      */
     @Override
     protected void initialize() {
-        MessageBusImpl.getInstance().subscribeBroadcast(TickBroadcast.class,this);
-        MessageBusImpl.getInstance().subscribeBroadcast(CrashedBroadcast.class,this);
-        MessageBusImpl.getInstance().subscribeBroadcast(TerminatedBroadcast.class,this);
-        MessageBusImpl.getInstance().subscribeEvent(DetectedObjectEvent.class,this);
+        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> workerTracker.fetchData(t));
+        subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast t) -> terminate());
+        subscribeBroadcast(TerminatedBroadcast.class,(TerminatedBroadcast t) -> {});//to fucking do
+        subscribeEvent(DetectedObjectsEvent.class,(DetectedObjectsEvent t) -> workerTracker.processDetectedObjects(t));
     }
 
 }

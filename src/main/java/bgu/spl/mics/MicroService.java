@@ -1,6 +1,7 @@
 package bgu.spl.mics;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The MicroService is an abstract class that any micro-service in the system
@@ -21,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  */
 public abstract class MicroService implements Runnable {
-	private ConcurrentHashMap<Class<? extends Message>,Callback> messageCallback;
-    private boolean terminated = false;
+	protected ConcurrentHashMap<Class<? extends Message>,Callback> messageCallback;
+    private AtomicBoolean terminated;
     private final String name;
 
     /**
@@ -31,6 +32,7 @@ public abstract class MicroService implements Runnable {
      */
     public MicroService(String name) {
         this.name = name;
+        terminated.set(false);
         messageCallback=new ConcurrentHashMap<>();
         MessageBusImpl.getInstance().register(this);
     }
@@ -136,7 +138,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        this.terminated = true;
+        this.terminated.set(true);
         MessageBusImpl.getInstance().unregister(this);
     }
 
@@ -155,7 +157,7 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         initialize();
-        while (!terminated) {
+        while (!terminated.get()) {
             try {
                 Message m=MessageBusImpl.getInstance().awaitMessage(this);
                 messageCallback.get(m).call(m);//check again
