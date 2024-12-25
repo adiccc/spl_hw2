@@ -21,7 +21,7 @@ public class LiDarDataBase {
     }
     private void initLidarData(String filePath){
         this.cloudPoints = new ArrayList<>();
-        JsonArray jsonArray = FileReaderUtil.readJson(filePath="/lidar_data.json").getAsJsonArray();
+        JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
         // Iterate over each object in the JSON array
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject cloudPointJson = jsonArray.get(i).getAsJsonObject();

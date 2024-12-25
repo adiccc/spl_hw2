@@ -10,4 +10,11 @@ public class Pose {
     private float yaw;//angle from 0,0
     private int Time;
 
+    public Pose(float x, float y, float yaw, int Time) {
+        this.x = x;
+        this.y = y;
+        this.yaw = yaw;
+        this.Time = Time;
+    }
+
 }

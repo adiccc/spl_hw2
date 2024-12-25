@@ -20,8 +20,7 @@ public class GurionRockRunner {
      */
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        FileReaderUtil f=new FileReaderUtil();
-        System.out.println(FileReaderUtil.readJson("/Users/adicohen/Documents/spl/spl_hw2/example input/configuration_file.json"));
+        
         // TODO: Parse configuration file.
         // TODO: Initialize system components and services.
         // TODO: Start the simulation.
