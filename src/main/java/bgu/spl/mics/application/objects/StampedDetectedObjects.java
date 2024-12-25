@@ -9,4 +9,8 @@ import java.util.List;
 public class StampedDetectedObjects {
     private int time;
     private List<DetectedObject> detectedObjects;
+    public StampedDetectedObjects(int time,List<DetectedObject> detectedObjects) {
+        this.detectedObjects = detectedObjects;
+        this.time = time;
+    }
 }

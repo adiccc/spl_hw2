@@ -1,5 +1,7 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.FileReaderUtil;
+
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
  * <p>
@@ -18,7 +20,8 @@ public class GurionRockRunner {
      */
     public static void main(String[] args) {
         System.out.println("Hello World!");
-
+        FileReaderUtil f=new FileReaderUtil();
+        System.out.println(FileReaderUtil.readJson("/Users/adicohen/Documents/spl/spl_hw2/example input/configuration_file.json"));
         // TODO: Parse configuration file.
         // TODO: Initialize system components and services.
         // TODO: Start the simulation.
