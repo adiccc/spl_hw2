@@ -9,4 +9,15 @@ import java.util.List;
 public class StampedDetectedObjects {
     private int time;
     private List<DetectedObject> detectedObjects;
+
+    public StampedDetectedObjects(int time, List<DetectedObject> detectedObjects) {
+        this.time = time;
+        this.detectedObjects = detectedObjects;
+    }
+    public int getTime() {
+        return time;
+    }
+    public List<DetectedObject> getDetectedObjects() {
+        return detectedObjects;
+    }
 }

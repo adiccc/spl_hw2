@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import com.google.gson.stream.JsonReader;
+
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -30,24 +32,12 @@ public class MessageBusImpl implements MessageBus {
 	}
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		if (eventsMapping.containsKey(type)) {
-			eventsMapping.get(type).add(m);
-		}
-		else{
-			eventsMapping.put(type,new LinkedBlockingQueue<>());
-			eventsMapping.get(type).add(m);
-		}
+		eventsMapping.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		if (broadcasts.containsKey(type)) {
-			broadcasts.get(type).add(m);
-		}
-		else{
-			broadcasts.put(type,new LinkedBlockingQueue<>());
-			broadcasts.get(type).add(m);
-		}
+		broadcasts.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
@@ -63,8 +53,11 @@ public class MessageBusImpl implements MessageBus {
 		if (queue != null) {
 			for (MicroService t : queue) {
 				try {
-					if(microQueues.containsKey(t))
-            			microQueues.get(t).put(b);
+					synchronized (t){
+						if(microQueues.containsKey(t))
+            				microQueues.get(t).put(b);
+						t.notifyAll();
+					}
        		 	} catch (InterruptedException e) {}
 			}
 		}
@@ -79,10 +72,17 @@ public class MessageBusImpl implements MessageBus {
 		}
 		else{
 			BlockingQueue<MicroService> t=eventsMapping.get(e);
-			MicroService temp=t.poll();
-			BlockingQueue<Message> q=microQueues.get(temp);
-			q.add(e);
-			q.notifyAll();
+			boolean ex=false;
+			while(!ex && !t.isEmpty()){
+				MicroService temp=t.poll();
+				synchronized (temp){
+				if(microQueues.containsKey(temp)) {
+					microQueues.get(temp).add(e);
+					ex=true;
+				}
+				temp.notifyAll();
+			}
+			}
 			Future<T> f=new Future<T>();
 			eventsFuture.put(e,f);
 			return f;
@@ -91,32 +91,30 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		if(!microQueues.containsKey(m)){
-			microQueues.put(m,new LinkedBlockingQueue<>());
-		}
+		microQueues.computeIfAbsent(m, key -> new LinkedBlockingQueue<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		if(microQueues.containsKey(m)) {
-			synchronized (microQueues.get(m)) {
-				microQueues.remove(m);
-				microQueues.notifyAll();
+			synchronized (m) {
+				if(microQueues.containsKey(m)) {
+					microQueues.remove(m);
+					for (BlockingQueue<MicroService> microServices : eventsMapping.values()) {
+						for (MicroService b : microServices) {
+							if (b.equals(m)) {
+								microServices.remove(b);
+							}
+						}
+					}
+					for (BlockingQueue<MicroService> microServices : broadcasts.values()) {
+						for (MicroService b : microServices) {
+							if (b.equals(m)) {
+								microServices.remove(b);
+							}
+						}
+					}
 			}
-				for (BlockingQueue<MicroService> microServices : eventsMapping.values()) {
-					for (MicroService b : microServices) {
-						if (b.equals(m)) {
-							microServices.remove(b);
-						}
-					}
-				}
-				for (BlockingQueue<MicroService> microServices : broadcasts.values()) {
-					for (MicroService b : microServices) {
-						if (b.equals(m)) {
-							microServices.remove(b);
-						}
-					}
-				}
+				m.notifyAll();
 		}
 	}
 

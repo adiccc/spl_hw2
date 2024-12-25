@@ -14,4 +14,7 @@ public class DetectedObject {
         this.id = id;
         this.description = description;
     }
+    public String getId() {
+        return id;
+    }
 }

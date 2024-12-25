@@ -157,6 +157,7 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         initialize();
+         MessageBusImpl.getInstance().register(this);
         while (!terminated.get()) {
             try {
                 Message m=MessageBusImpl.getInstance().awaitMessage(this);

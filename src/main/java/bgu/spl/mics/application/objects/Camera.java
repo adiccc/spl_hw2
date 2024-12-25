@@ -1,5 +1,8 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.MessageBusImpl;
+import bgu.spl.mics.application.messages.DetectedObjectsEvent;
+
 import java.util.List;
 
 /**
@@ -17,7 +20,15 @@ public class Camera {
         this.frequency = frequency;
         this.status = status;
     }
-    public void Detect(int time){//read from json
-
+    public void Detect(int time){
+        List<DetectedObject> l=null;
+        for(StampedDetectedObjects detectedObjects : detectedObjectList){
+            if(detectedObjects.getTime() == time){
+                l=detectedObjects.getDetectedObjects();
+            }
+        }
+        if(l!=null)
+            MessageBusImpl.getInstance().sendEvent(new DetectedObjectsEvent(l,time));
     }
+
 }

@@ -30,6 +30,9 @@ public class LiDarService extends MicroService {
      * Registers the service to handle DetectObjectsEvents and TickBroadcasts,
      * and sets up the necessary callbacks for processing data.
      */
+    public void TrackDetected(DetectedObjectsEvent e){
+
+    }
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> workerTracker.fetchData(t));

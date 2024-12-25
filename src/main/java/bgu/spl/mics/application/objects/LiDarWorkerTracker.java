@@ -27,7 +27,8 @@ public class LiDarWorkerTracker {
             // TODO:
     }
 
-    public void processDetectedObjects(DetectedObjectsEvent e){
-        //TODO
+    public void processDetectedObjects(DetectedObjectsEvent e){//create tracked object event
+        List<StampedCloudPoints> l = LiDarDataBase.getInstance("somePath").getCloudPoint(e.getDetectedObjects(),e.getTime()); // Problem:
+
     }
 }
