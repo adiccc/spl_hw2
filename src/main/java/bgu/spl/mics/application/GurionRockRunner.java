@@ -38,10 +38,8 @@ public class GurionRockRunner {
         int duration=0;
         TimeService timeService;
         GPSIMU gpsimu;
-        PoseService poseService;
-        //needed??? lo yoda'at
-        FusionSlam fusionSlam=FusionSlam.getInstance();
-        FusionSlamService fusionSlamService=new FusionSlamService(fusionSlam);
+        PoseService poseService=null;
+        FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 
         if(args.length >0 ){
             JsonObject rootObject = FileReaderUtil.readJson(args[0]);
@@ -84,7 +82,17 @@ public class GurionRockRunner {
             timeService=new TimeService(tickTime,duration);
 
             //Start the simulation.
-            
+            if(poseService!=null)
+                new Thread(poseService).start();
+            for(CameraService c: camerasServices){
+                new Thread(c).start();
+            }
+            for(LiDarService l: liDarServices){
+                new Thread(l).start();
+            }
+            new Thread(fusionSlamService).start();
+            new Thread(timeService).start();
+
         }
         return;
     }
