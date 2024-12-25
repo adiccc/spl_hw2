@@ -20,10 +20,11 @@ public class Camera {
     private STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
 
-    public Camera(int id, int frequency, STATUS status) {
+    public Camera(int id, int frequency, STATUS status,String filePath) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
+        initDetectedObjects(filePath);
     }
     public void Detect(int time) {
         List<DetectedObject> l = null;

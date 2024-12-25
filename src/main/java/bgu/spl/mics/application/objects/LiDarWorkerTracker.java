@@ -3,6 +3,7 @@ package bgu.spl.mics.application.objects;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,11 +18,11 @@ public class LiDarWorkerTracker {
     private List<TrackedObject> lastTrackedObjects;
     // TODO: Define fields and methods.
 
-    public LiDarWorkerTracker(final int id, final int frequency, final STATUS status, final List<TrackedObject> lastTrackedObjects) {
+    public LiDarWorkerTracker( int id,  int frequency,  STATUS status) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
-        this.lastTrackedObjects = lastTrackedObjects;
+        this.lastTrackedObjects =new ArrayList<>();
     }
     public void fetchData(TickBroadcast t){
             // TODO:

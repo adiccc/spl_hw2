@@ -20,6 +20,7 @@ public class GPSIMU {
     public GPSIMU(String filePath) {
         PoseList = new ArrayList<>();
         JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
+
         // Iterate over each JSON object in the array
         for (JsonElement element : jsonArray) {
             JsonObject obj = element.getAsJsonObject();

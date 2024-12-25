@@ -62,12 +62,7 @@ public class LiDarDataBase {
         }
         return liDarDataBase;
     }
-    private LiDarDataBase() {
-        init();
-    }
-    private void init() {//read from json!!!!!!
 
-    }
     public List<StampedCloudPoints> getCloudPoints(List<DetectedObject> l,int time) {
         List<StampedCloudPoints> c = new LinkedList<>();
         for(DetectedObject o : l) {
