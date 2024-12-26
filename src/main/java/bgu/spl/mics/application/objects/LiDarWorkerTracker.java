@@ -20,15 +20,16 @@ public class LiDarWorkerTracker {
     private List<TrackedObject> lastTrackedObjects;
     private List<DetectedObjectsEvent> detectedEvents;
     private String filePath;
-    // TODO: Define fields and methods.
+    private StatisticalFolder statisticalFolder;
 
-    public LiDarWorkerTracker( int id,  int frequency, STATUS status, String filePath) {
+    public LiDarWorkerTracker( int id,  int frequency, STATUS status, String filePath, StatisticalFolder statisticalFolder ) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
         this.lastTrackedObjects = new ArrayList<>();
         this.detectedEvents = new ArrayList<>();
         this.filePath = filePath;
+        this.statisticalFolder = statisticalFolder;
     }
     public void fetchData(TickBroadcast t){
             for(DetectedObjectsEvent e: detectedEvents){
@@ -48,6 +49,7 @@ public class LiDarWorkerTracker {
             }
         }
         if(lastTrackedObjects.size()>0){
+            statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
             MessageBusImpl.getInstance().sendEvent(new TrackedObjectsEvent(lastTrackedObjects));
         }
     }

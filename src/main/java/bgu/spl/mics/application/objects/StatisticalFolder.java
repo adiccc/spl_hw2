@@ -12,4 +12,24 @@ public class StatisticalFolder {
     private AtomicInteger numDetectedObjects;
     private AtomicInteger numTrackedObjects;
     private AtomicInteger numLandmarks;
+    public StatisticalFolder() {
+        this.systemRuntime = new AtomicInteger(0);
+        this.numDetectedObjects = new AtomicInteger(0);
+        this.numTrackedObjects = new AtomicInteger(0);
+        this.numLandmarks = new AtomicInteger(0);
+    }
+
+    public void increaseNumDetectedObjects(int numDetectedObjects) {
+        this.numDetectedObjects.addAndGet(numDetectedObjects);
+    }
+    public void increaseNumTrackedObjects(int numTrackedObjects) {
+        this.numTrackedObjects.addAndGet(numTrackedObjects);
+    }
+    public void increaseNumLandmarks(int numLandmarks) {
+        this.numLandmarks.addAndGet(numLandmarks);
+    }
+    public void setSystemRuntime(int systemRuntime) {
+        this.systemRuntime.set(systemRuntime);
+    }
+
 }

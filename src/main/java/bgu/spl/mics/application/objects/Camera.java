@@ -19,12 +19,14 @@ public class Camera {
     private int frequency;
     private STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
+    private StatisticalFolder statisticalFolder;
 
-    public Camera(int id, int frequency, STATUS status,String filePath) {
+    public Camera(int id, int frequency, STATUS status,String filePath, StatisticalFolder statisticalFolder) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
         initDetectedObjects(filePath);
+        this.statisticalFolder = statisticalFolder;
     }
     public void Detect(int time) {
         List<DetectedObject> l = null;
@@ -33,8 +35,10 @@ public class Camera {
                 l = detectedObjects.getDetectedObjects();
             }
         }
-        if (l != null)
+        if (l != null){
+            statisticalFolder.increaseNumDetectedObjects(l.size());
             MessageBusImpl.getInstance().sendEvent(new DetectedObjectsEvent(l, time));
+        }
     }
         private void initDetectedObjects (String path){
             detectedObjectList = new ArrayList<>();

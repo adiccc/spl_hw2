@@ -29,6 +29,7 @@ public class GurionRockRunner {
      */
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        StatisticalFolder statisticalFolder = new StatisticalFolder();
         List<Camera> cameras = new ArrayList<>();
         List<CameraService> camerasServices = new ArrayList<>();
         List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
@@ -50,12 +51,12 @@ public class GurionRockRunner {
 
                 switch (key) {
                     case "Cameras":
-                        cameras=handleCameras(element.getAsJsonObject());
+                        cameras=handleCameras(element.getAsJsonObject(),statisticalFolder);
                         camerasServices=handelCamerasService(cameras);
                         break;
 
                     case "LidarWorkers":
-                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject());
+                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
@@ -76,7 +77,7 @@ public class GurionRockRunner {
                         System.out.println("Unknown key: " + key);
                 }
             }
-            timeService=new TimeService(tickTime,duration);
+            timeService=new TimeService(tickTime,duration,statisticalFolder);
 
             //Start the simulation.
             if(poseService!=null)
@@ -105,7 +106,7 @@ public class GurionRockRunner {
         return liDarServices;
     }
 
-    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject) {
+    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject,StatisticalFolder statisticalFolder) {
         List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
         int index=1;
         // Extract the CamerasConfigurations array
@@ -124,7 +125,7 @@ public class GurionRockRunner {
             STATUS status = STATUS.DOWN;
 
             // Create a Camera object and add it to the list
-            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status,filePath);
+            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status,filePath,statisticalFolder);
             liDarWorkerTrackers.add(lidar);
         }
         return liDarWorkerTrackers;
@@ -140,7 +141,7 @@ public class GurionRockRunner {
         return camerasServices;
     }
 
-    private static List<Camera> handleCameras(JsonObject jsonObject) {
+    private static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder) {
         List<Camera> cameras = new ArrayList<>();
 
         // Extract the CamerasConfigurations array
@@ -159,7 +160,7 @@ public class GurionRockRunner {
             STATUS status = STATUS.DOWN; // Example logic for status
 
             // Create a Camera object and add it to the list
-            Camera camera = new Camera(id, frequency, status, cameraDataPath);
+            Camera camera = new Camera(id, frequency, status, cameraDataPath,statisticalFolder);
             cameras.add(camera);
         }
         return cameras;
