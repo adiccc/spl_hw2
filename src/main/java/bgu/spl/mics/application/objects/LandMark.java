@@ -10,4 +10,19 @@ public class LandMark {
     private String Id;
     private String Description;
     private List<CloudPoint> Coordinates;
+
+    public LandMark(String Id, String Description, List<CloudPoint> Coordinates) {
+        this.Id = Id;
+        this.Description = Description;
+        this.Coordinates = Coordinates;
+    }
+    public String getId() {
+        return Id;
+    }
+    public String getDescription() {
+        return Description;
+    }
+    public void mergePoints(CloudPoint[] point) {
+
+    }
 }

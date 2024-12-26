@@ -68,15 +68,12 @@ public class LiDarDataBase {
     private void init() {//read from json!!!!!!
 
     }
-    public List<StampedCloudPoints> getCloudPoints(List<DetectedObject> l,int time) {
-        List<StampedCloudPoints> c = new LinkedList<>();
-        for(DetectedObject o : l) {
+    public StampedCloudPoints getCloudPoint(DetectedObject d,int time) {
             for (StampedCloudPoints cloudPoint : cloudPoints) {
-            if (cloudPoint.getId().equals(o.getId())&&cloudPoint.getTime()==time) {
-                c.add(cloudPoint);
+            if (cloudPoint.getId().equals(d.getId())&&cloudPoint.getTime()==time) {
+               return cloudPoint;
             }
         }
-        }
-        return c;
+        return null;
     }
 }
