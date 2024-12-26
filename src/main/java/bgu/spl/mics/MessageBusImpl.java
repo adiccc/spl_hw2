@@ -16,7 +16,10 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
 	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;
 	private ConcurrentHashMap<Event,Future> eventsFuture;
-	private static MessageBusImpl INSTANCE =null;
+
+	private static class MessageBusHolder{
+		private static final MessageBusImpl INSTANCE = new MessageBusImpl();
+	}
 
 	private MessageBusImpl(){
 		eventsMapping = new ConcurrentHashMap<>();
@@ -25,10 +28,7 @@ public class MessageBusImpl implements MessageBus {
 		eventsFuture= new ConcurrentHashMap<>();
 	}
 	public static MessageBus getInstance(){
-		if(INSTANCE==null){
-			INSTANCE=new MessageBusImpl();
-		}
-		return INSTANCE;
+		return MessageBusHolder.INSTANCE;
 	}
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {

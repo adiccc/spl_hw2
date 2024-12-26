@@ -33,7 +33,6 @@ public class GurionRockRunner {
         List<CameraService> camerasServices = new ArrayList<>();
         List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
         List<LiDarService> liDarServices = new ArrayList<>();
-        LiDarDataBase liDarDataBase;
         int tickTime=0;
         int duration=0;
         TimeService timeService;
@@ -57,8 +56,6 @@ public class GurionRockRunner {
 
                     case "LidarWorkers":
                         liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject());
-                        String filePath=element.getAsJsonObject().get("lidars_data_path").getAsString();
-                        liDarDataBase=LiDarDataBase.getInstance(filePath);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
@@ -114,6 +111,9 @@ public class GurionRockRunner {
         // Extract the CamerasConfigurations array
         JsonArray workersConfig = jsonObject.getAsJsonArray("LidarConfigurations");
 
+        // Get the lidar database file path
+        String filePath=jsonObject.get("lidars_data_path").getAsString();
+
         // Iterate through the cameras configurations
         for (JsonElement lidarElement : workersConfig) {
             JsonObject lidarObj = lidarElement.getAsJsonObject();
@@ -124,7 +124,7 @@ public class GurionRockRunner {
             STATUS status = STATUS.DOWN;
 
             // Create a Camera object and add it to the list
-            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status);
+            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status,filePath);
             liDarWorkerTrackers.add(lidar);
         }
         return liDarWorkerTrackers;

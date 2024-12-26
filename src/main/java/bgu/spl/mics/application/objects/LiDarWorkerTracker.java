@@ -19,14 +19,16 @@ public class LiDarWorkerTracker {
     private STATUS status;
     private List<TrackedObject> lastTrackedObjects;
     private List<DetectedObjectsEvent> detectedEvents;
+    private String filePath;
     // TODO: Define fields and methods.
 
-    public LiDarWorkerTracker(final int id, final int frequency, final STATUS status, final List<TrackedObject> lastTrackedObjects) {
+    public LiDarWorkerTracker( int id,  int frequency, STATUS status, String filePath) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
-        this.lastTrackedObjects = lastTrackedObjects;
+        this.lastTrackedObjects = new ArrayList<>();
         this.detectedEvents = new ArrayList<>();
+        this.filePath = filePath;
     }
     public void fetchData(TickBroadcast t){
             for(DetectedObjectsEvent e: detectedEvents){
@@ -40,7 +42,7 @@ public class LiDarWorkerTracker {
         List<DetectedObject> dec=e.getDetectedObjects();
         lastTrackedObjects=new ArrayList<>();
         for(DetectedObject d:dec){
-            StampedCloudPoints s=LiDarDataBase.getInstance("somePath").getCloudPoint(d,time);
+            StampedCloudPoints s=LiDarDataBase.getInstance(filePath).getCloudPoint(d,time);
             if(s!=null){
                 lastTrackedObjects.add(new TrackedObject(d.getId(),s.getTime(),d.getDescription(),s.getCloudPoints().toArray(new CloudPoint[0])));
             }

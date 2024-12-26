@@ -16,21 +16,23 @@ public class FusionSlam {
     private List<TrackedObjectsEvent> trackedObjectsevents;
     private List<PoseEvent> poses;
     private ArrayList<LandMark> landMarks;
-    // Singleton instance holder
-    private static class FusionSlamHolder {
-        // TODO: Implement singleton instance logic.
-    }
-
-    private static FusionSlam instance=null;
     private ConcurrentHashMap<Integer,StampedDetectedObjects> maps;
 
-    private FusionSlam() {
-        //TODO
+    // Singleton instance holder
+    private static class FusionSlamHolder {
+        private static FusionSlam instance=new FusionSlam();
     }
+
+    private FusionSlam() {
+        //TODO - check if its ok
+        trackedObjectsevents = new ArrayList<>();
+        poses = new ArrayList<>();
+        landMarks = new ArrayList<>();
+        maps = new ConcurrentHashMap<>();
+    }
+
     public static FusionSlam getInstance() {
-        if(instance==null)
-            instance = new FusionSlam();
-        return instance;
+        return FusionSlamHolder.instance;
     }
 
     public void updateMap(TrackedObjectsEvent trackedObjectsEvent) {

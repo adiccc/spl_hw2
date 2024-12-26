@@ -14,14 +14,39 @@ import java.util.List;
  */
 public class LiDarDataBase {
     private List<StampedCloudPoints> cloudPoints;
-    private static LiDarDataBase liDarDataBase=null;
+
+    private static class LidarHolder {
+        private static LiDarDataBase instance;
+
+        private static void init(String path) {
+            instance = new LiDarDataBase(path);
+        }
+    }
+
+    /**
+     * Returns the singleton instance of LiDarDataBase.
+     *
+     * @param filePath The path to the LiDAR data file.
+     * @return The singleton instance of LiDarDataBase.
+     */
+    public static LiDarDataBase getInstance(String filePath) {
+        if (LidarHolder.instance == null) {
+            synchronized (LidarHolder.class) {
+                if (LidarHolder.instance == null) {
+                    LidarHolder.init(filePath);
+                }
+            }
+        }
+        return LidarHolder.instance;
+    }
+
 
     private LiDarDataBase(String filePath){
         initLidarData(filePath);
     }
     private void initLidarData(String filePath){
         this.cloudPoints = new ArrayList<>();
-        JsonArray jsonArray = FileReaderUtil.readJson(filePath="/lidar_data.json").getAsJsonArray();
+        JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
         // Iterate over each object in the JSON array
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject cloudPointJson = jsonArray.get(i).getAsJsonObject();
@@ -50,24 +75,6 @@ public class LiDarDataBase {
         }
     }
 
-    /**
-     * Returns the singleton instance of LiDarDataBase.
-     *
-     * @param filePath The path to the LiDAR data file.
-     * @return The singleton instance of LiDarDataBase.
-     */
-    public static LiDarDataBase getInstance(String filePath) {
-        if(liDarDataBase == null) {
-            liDarDataBase = new LiDarDataBase(filePath);
-        }
-        return liDarDataBase;
-    }
-    private LiDarDataBase() {
-        init();
-    }
-    private void init() {//read from json!!!!!!
-
-    }
     public StampedCloudPoints getCloudPoint(DetectedObject d,int time) {
             for (StampedCloudPoints cloudPoint : cloudPoints) {
             if (cloudPoint.getId().equals(d.getId())&&cloudPoint.getTime()==time) {
