@@ -1,9 +1,12 @@
 package bgu.spl.mics.application.objects;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import bgu.spl.mics.FileReaderUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,35 +47,14 @@ public class LiDarDataBase {
     private LiDarDataBase(String filePath){
         initLidarData(filePath);
     }
+
     private void initLidarData(String filePath){
-        this.cloudPoints = new ArrayList<>();
         JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
-        // Iterate over each object in the JSON array
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject cloudPointJson = jsonArray.get(i).getAsJsonObject();
-            int time = cloudPointJson.get("time").getAsInt();
-            String id = cloudPointJson.get("id").getAsString();
 
-            // Parse cloudPoints array
-            JsonArray cloudPointsArray = cloudPointJson.getAsJsonArray("cloudPoints");
-            List<CloudPoint> tempCloudPoints = new ArrayList<>();
-
-            // Iterate over each cloudPoint and create CloudPoint objects
-            for (int j = 0; j < cloudPointsArray.size(); j++) {
-                JsonArray point = cloudPointsArray.get(j).getAsJsonArray();
-                double x = point.get(0).getAsDouble();
-                double y = point.get(1).getAsDouble();
-                double z = point.get(2).getAsDouble();
-
-                // Create a new CloudPoint object and add it to the list
-                CloudPoint cloudPoint = new CloudPoint(x, y);
-                tempCloudPoints.add(cloudPoint);
-            }
-
-            // Create a StampedCloudPoints object and add it to the list
-            StampedCloudPoints stampedCloudPoints = new StampedCloudPoints(id, time, tempCloudPoints);
-            cloudPoints.add(stampedCloudPoints);
-        }
+        // Get the objects and parse them into cloudPoints list
+        Gson gson = new Gson();
+        Type objectListType = new TypeToken<List<StampedCloudPoints>>() {}.getType();
+        this.cloudPoints = gson.fromJson(jsonArray, objectListType);
     }
 
     public StampedCloudPoints getCloudPoint(DetectedObject d,int time) {

@@ -1,10 +1,13 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.FileReaderUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,20 +24,10 @@ public class GPSIMU {
         PoseList = new ArrayList<>();
         JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
 
-        // Iterate over each JSON object in the array
-        for (JsonElement element : jsonArray) {
-            JsonObject obj = element.getAsJsonObject();
-
-            // Extract fields
-            int time = obj.get("time").getAsInt();
-            float x = obj.get("x").getAsFloat();
-            float y = obj.get("y").getAsFloat();
-            float yaw = obj.get("yaw").getAsFloat();
-
-            // Create and add Pose object
-            Pose pose = new Pose(x, y, yaw, time);
-            PoseList.add(pose);
-        }
+        // Get the objects and parse them into cloudPoints list
+        Gson gson = new Gson();
+        Type objectListType = new TypeToken<List<Pose>>() {}.getType();
+        this.PoseList = gson.fromJson(jsonArray, objectListType);
     }
 
     public Pose getPose(){

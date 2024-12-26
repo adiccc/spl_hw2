@@ -11,4 +11,8 @@ public class CloudPoint {
         this.x = x;
         this.y = y;
     }
+    public CloudPoint(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+    }
 }

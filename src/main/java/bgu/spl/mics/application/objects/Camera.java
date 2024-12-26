@@ -4,9 +4,12 @@ import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 
 import bgu.spl.mics.FileReaderUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +44,7 @@ public class Camera {
         }
     }
         private void initDetectedObjects (String path){
+            Gson gson = new Gson();
             detectedObjectList = new ArrayList<>();
             JsonObject o = FileReaderUtil.readJson(path);
             String name = "camera" + id;
@@ -53,17 +57,8 @@ public class Camera {
                     int time = cameraEntry.get("time").getAsInt();
 
                     // Get the detected objects and parse them into DetectedObject list
-                    JsonArray detectedObjectsArray = cameraEntry.getAsJsonArray("detectedObjects");
-                    List<DetectedObject> detectedObjects = new ArrayList<>();
-                    for (int j = 0; j < detectedObjectsArray.size(); j++) {
-                        JsonObject detectedObjectJson = detectedObjectsArray.get(j).getAsJsonObject();
-                        String id = detectedObjectJson.get("id").getAsString();
-                        String description = detectedObjectJson.get("description").getAsString();
-
-                        // Create a new DetectedObject and add it to the list
-                        DetectedObject detectedObject = new DetectedObject(id, description);
-                        detectedObjects.add(detectedObject);
-                    }
+                    Type objectListType = new TypeToken<List<DetectedObject>>() {}.getType();
+                    List<DetectedObject> detectedObjects = gson.fromJson(cameraEntry.getAsJsonArray("detectedObjects"), objectListType);
 
                     // Create StampedDetectedObjects instance and add it to the list
                     StampedDetectedObjects stampedDetectedObjects = new StampedDetectedObjects(time, detectedObjects);
