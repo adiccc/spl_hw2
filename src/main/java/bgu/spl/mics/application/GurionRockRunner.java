@@ -1,6 +1,15 @@
 package bgu.spl.mics.application;
 
 import bgu.spl.mics.FileReaderUtil;
+import bgu.spl.mics.application.objects.*;
+import bgu.spl.mics.application.services.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
@@ -20,10 +29,140 @@ public class GurionRockRunner {
      */
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        FileReaderUtil f=new FileReaderUtil();
-        System.out.println(FileReaderUtil.readJson("/Users/adicohen/Documents/spl/spl_hw2/example input/configuration_file.json"));
-        // TODO: Parse configuration file.
-        // TODO: Initialize system components and services.
-        // TODO: Start the simulation.
+        List<Camera> cameras = new ArrayList<>();
+        List<CameraService> camerasServices = new ArrayList<>();
+        List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
+        List<LiDarService> liDarServices = new ArrayList<>();
+        LiDarDataBase liDarDataBase;
+        int tickTime=0;
+        int duration=0;
+        TimeService timeService;
+        GPSIMU gpsimu;
+        PoseService poseService=null;
+        FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
+
+        if(args.length >0 ){
+            JsonObject rootObject = FileReaderUtil.readJson(args[0]);
+
+            Set<String> keys = rootObject.keySet();
+
+            for (String key : keys) {
+                JsonElement element = rootObject.get(key);
+
+                switch (key) {
+                    case "Cameras":
+                        cameras=handleCameras(element.getAsJsonObject());
+                        camerasServices=handelCamerasService(cameras);
+                        break;
+
+                    case "LidarWorkers":
+                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject());
+                        String filePath=element.getAsJsonObject().get("lidars_data_path").getAsString();
+                        liDarDataBase=LiDarDataBase.getInstance(filePath);
+                        liDarServices=handelLidarService(liDarWorkerTrackers);
+                        break;
+
+                    case "poseJsonFile":
+                        gpsimu=new GPSIMU(element.getAsString());
+                        poseService=new PoseService(gpsimu);
+                        break;
+
+                    case "TickTime":
+                        tickTime=element.getAsInt();
+                        break;
+
+                    case "Duration":
+                        duration=element.getAsInt();
+                        break;
+
+                    default:
+                        System.out.println("Unknown key: " + key);
+                }
+            }
+            timeService=new TimeService(tickTime,duration);
+
+            //Start the simulation.
+            if(poseService!=null)
+                new Thread(poseService).start();
+            for(CameraService c: camerasServices){
+                new Thread(c).start();
+            }
+            for(LiDarService l: liDarServices){
+                new Thread(l).start();
+            }
+            new Thread(fusionSlamService).start();
+            new Thread(timeService).start();
+
+        }
+        return;
     }
+
+
+    private static List<LiDarService> handelLidarService(List<LiDarWorkerTracker> liDarWorkerTrackers) {
+        List<LiDarService> liDarServices = new ArrayList<>();
+        int index=1;
+        for(LiDarWorkerTracker liDarWorkerTracker : liDarWorkerTrackers) {
+            liDarServices.add(new LiDarService(liDarWorkerTracker,index));
+            index++;
+        }
+        return liDarServices;
+    }
+
+    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject) {
+        List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
+        int index=1;
+        // Extract the CamerasConfigurations array
+        JsonArray workersConfig = jsonObject.getAsJsonArray("LidarConfigurations");
+
+        // Iterate through the cameras configurations
+        for (JsonElement lidarElement : workersConfig) {
+            JsonObject lidarObj = lidarElement.getAsJsonObject();
+
+            // Extract lidar properties
+            int id = lidarObj.get("id").getAsInt();
+            int frequency = lidarObj.get("frequency").getAsInt();
+            STATUS status = STATUS.DOWN;
+
+            // Create a Camera object and add it to the list
+            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status);
+            liDarWorkerTrackers.add(lidar);
+        }
+        return liDarWorkerTrackers;
+    }
+
+    private static List<CameraService> handelCamerasService(List<Camera> cameras) {
+        List<CameraService> camerasServices = new ArrayList<>();
+        int index=1;
+        for (Camera camera : cameras) {
+            camerasServices.add(new CameraService(camera, index));
+            index++;
+        }
+        return camerasServices;
+    }
+
+    private static List<Camera> handleCameras(JsonObject jsonObject) {
+        List<Camera> cameras = new ArrayList<>();
+
+        // Extract the CamerasConfigurations array
+        JsonArray camerasConfig = jsonObject.getAsJsonArray("CamerasConfigurations");
+
+        // Get the camera data file path
+        String cameraDataPath = jsonObject.get("camera_datas_path").getAsString();
+
+        // Iterate through the cameras configurations
+        for (JsonElement cameraElement : camerasConfig) {
+            JsonObject cameraObj = cameraElement.getAsJsonObject();
+
+            // Extract camera properties
+            int id = cameraObj.get("id").getAsInt();
+            int frequency = cameraObj.get("frequency").getAsInt();
+            STATUS status = STATUS.DOWN; // Example logic for status
+
+            // Create a Camera object and add it to the list
+            Camera camera = new Camera(id, frequency, status, cameraDataPath);
+            cameras.add(camera);
+        }
+        return cameras;
+    }
+
 }

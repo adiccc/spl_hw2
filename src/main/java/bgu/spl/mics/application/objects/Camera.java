@@ -20,10 +20,11 @@ public class Camera {
     private STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
 
-    public Camera(int id, int frequency, STATUS status) {
+    public Camera(int id, int frequency, STATUS status,String filePath) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
+        initDetectedObjects(filePath);
     }
     public void Detect(int time) {
         List<DetectedObject> l = null;
@@ -37,7 +38,7 @@ public class Camera {
     }
         private void initDetectedObjects (String path){
             detectedObjectList = new ArrayList<>();
-            JsonObject o = FileReaderUtil.readJson(path + "/camera_data.json");
+            JsonObject o = FileReaderUtil.readJson(path);
             String name = "camera" + id;
             // Check if the camera exists in the JSON object
             if (o.has(name)) {

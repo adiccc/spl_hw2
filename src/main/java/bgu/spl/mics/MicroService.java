@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class MicroService implements Runnable {
 	protected ConcurrentHashMap<Class<? extends Message>,Callback> messageCallback;
-    private AtomicBoolean terminated;
+    private boolean terminated;
     private final String name;
 
     /**
@@ -32,7 +32,7 @@ public abstract class MicroService implements Runnable {
      */
     public MicroService(String name) {
         this.name = name;
-        terminated.set(false);
+        terminated=false;
         messageCallback=new ConcurrentHashMap<>();
         MessageBusImpl.getInstance().register(this);
     }
@@ -138,7 +138,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        this.terminated.set(true);
+        this.terminated=true;
         MessageBusImpl.getInstance().unregister(this);
     }
 
@@ -158,7 +158,7 @@ public abstract class MicroService implements Runnable {
     public final void run() {
         initialize();
          MessageBusImpl.getInstance().register(this);
-        while (!terminated.get()) {
+        while (!terminated) {
             try {
                 Message m=MessageBusImpl.getInstance().awaitMessage(this);
                 messageCallback.get(m).call(m);//check again
