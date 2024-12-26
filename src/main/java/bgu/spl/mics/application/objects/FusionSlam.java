@@ -17,21 +17,34 @@ public class FusionSlam {
     private List<PoseEvent> poses;
     private ArrayList<LandMark> landMarks;
     private ConcurrentHashMap<Integer,StampedDetectedObjects> maps;
+    private StatisticalFolder statisticalFolder;
 
+    //TODO use statisticalFolder.increaseNumLandmarks before we add a new landmark to the map
     // Singleton instance holder
     private static class FusionSlamHolder {
-        private static FusionSlam instance=new FusionSlam();
+        private static FusionSlam instance;
+        private static void init(StatisticalFolder statisticalFolder){
+            instance = new FusionSlam(statisticalFolder);
+        }
     }
 
-    private FusionSlam() {
+    private FusionSlam(StatisticalFolder statisticalFolder) {
         //TODO - check if its ok
         trackedObjectsevents = new ArrayList<>();
         poses = new ArrayList<>();
         landMarks = new ArrayList<>();
         maps = new ConcurrentHashMap<>();
+        this.statisticalFolder=statisticalFolder;
     }
 
-    public static FusionSlam getInstance() {
+    public static FusionSlam getInstance(StatisticalFolder statisticalFolder) {
+        if (FusionSlamHolder.instance == null) {
+            synchronized (FusionSlamHolder.class) {
+                if (FusionSlamHolder.instance == null) {
+                    FusionSlamHolder.init(statisticalFolder);
+                }
+            }
+        }
         return FusionSlamHolder.instance;
     }
 

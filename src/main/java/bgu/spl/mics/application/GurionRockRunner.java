@@ -39,7 +39,7 @@ public class GurionRockRunner {
         TimeService timeService;
         GPSIMU gpsimu;
         PoseService poseService=null;
-        FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
+        FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder));
 
         if(args.length >0 ){
             JsonObject rootObject = FileReaderUtil.readJson(args[0]);
