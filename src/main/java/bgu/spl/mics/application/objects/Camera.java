@@ -56,7 +56,6 @@ public class Camera {
             detectedObjectList = new ArrayList<>();
             JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
-            System.out.println(System.getProperty("user.dir"));
             // Check if the camera exists in the JSON object
             if (o.has(name)) {
                 JsonArray cameraData = o.getAsJsonArray(name);
