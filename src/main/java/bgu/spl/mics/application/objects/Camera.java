@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
@@ -40,8 +41,16 @@ public class Camera {
             }
         }
         if (l != null){
-            statisticalFolder.increaseNumDetectedObjects(l.size());
-            return new DetectedObjectsEvent(l, time);
+            DetectedObjectsEvent dEvent=new DetectedObjectsEvent(l, time);
+            for(DetectedObject detectedObject : l){
+                if(detectedObject.getId().equals("ERROR")) {
+                    dEvent.setDetectedError(true);
+                    this.status=STATUS.ERROR;
+                }
+            }
+            if(this.status!=STATUS.ERROR)
+                statisticalFolder.increaseNumDetectedObjects(l.size());
+            return dEvent;
         }
         return null;
     }
