@@ -49,7 +49,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		ConcurrentLinkedQueue<MicroService> queue = broadcasts.get(b);
+		ConcurrentLinkedQueue<MicroService> queue = broadcasts.get(b.getClass());
 		if (queue != null) {
 			for (MicroService t : queue) {
 					synchronized (t){
@@ -69,7 +69,7 @@ public class MessageBusImpl implements MessageBus {
 			return null;
 		}
 		else{
-			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e);
+			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e.getClass());
 			boolean ex=false;
 			while(!ex && !t.isEmpty()){
 				MicroService temp=t.poll();

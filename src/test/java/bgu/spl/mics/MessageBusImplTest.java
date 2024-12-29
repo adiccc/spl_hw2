@@ -31,14 +31,17 @@ class MessageBusImplTest {
         timeService=new TimeService(500,10,statisticalFolder);
         gpsimu=new GPSIMU("example_input\\pose_data.json");
         poseService=new PoseService(gpsimu);
+        messageBus.subscribeBroadcast(TickBroadcast.class,cameraService);
+        messageBus.subscribeBroadcast(TickBroadcast.class,liDarService);
+        messageBus.subscribeEvent(DetectedObjectsEvent.class,liDarService);
         Thread cameraServiceThread = new Thread(cameraService);
         Thread liDarServiceThread = new Thread(liDarService);
         Thread timeServiceThread = new Thread(timeService);
         Thread poseServiceThread = new Thread(poseService);
-        timeServiceThread.start();
-        poseServiceThread.start();
-        cameraServiceThread.start();
-        liDarServiceThread.start();
+//        timeServiceThread.start();
+//        poseServiceThread.start();
+//        cameraServiceThread.start();
+//        liDarServiceThread.start();
     }
 
     @Test
@@ -57,6 +60,17 @@ class MessageBusImplTest {
     @Test
     void sendBroadcast() {
         messageBus.sendBroadcast(new TickBroadcast(1));
+        try {
+            Message m=messageBus.awaitMessage(cameraService);
+            assertNotNull(m, "cameraService didn't reseved the TickBrodcast");
+        } catch (InterruptedException e) {
+        }
+        try {
+            Message m2=messageBus.awaitMessage(liDarService);
+            assertNotNull(m2, "liDarService didn't reseved the TickBrodcast");
+        } catch (InterruptedException e) {
+        }
+
     }
 
     @Test

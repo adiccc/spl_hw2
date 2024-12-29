@@ -33,7 +33,7 @@ public class Camera {
     public DetectedObjectsEvent Detect(int time) {
         List<DetectedObject> l = null;
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
-            if (detectedObjects.getTime() + frequency == time) {
+            if (detectedObjects.getTime() + frequency <= time) {
                 l = detectedObjects.getDetectedObjects();
             }
         }

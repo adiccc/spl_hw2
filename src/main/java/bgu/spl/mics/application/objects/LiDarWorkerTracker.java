@@ -33,7 +33,7 @@ public class LiDarWorkerTracker {
     }
     public TrackedObjectsEvent fetchData(TickBroadcast t){
         for(DetectedObjectsEvent e: detectedEvents){
-                if(e.getStampedDetectedObjects().getTime()+frequency==t.getTime()){
+                if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){
                     detectedEvents.remove(e);
                     return sendTrackedEvent(e,t.getTime());//check again
                 }
