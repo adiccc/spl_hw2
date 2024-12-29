@@ -1,6 +1,7 @@
 package bgu.spl.mics.application;
 
 import bgu.spl.mics.FileHandelUtil;
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.JsonArray;
@@ -8,8 +9,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
@@ -19,7 +22,6 @@ import java.util.Set;
  * </p>
  */
 public class GurionRockRunner {
-
     /**
      * The main method of the simulation.
      * This method sets up the necessary components, parses configuration files,
@@ -48,7 +50,7 @@ public class GurionRockRunner {
 //            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
             JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input/configuration_file.json");
             Set<String> keys = rootObject.keySet();
-
+            int ThreadCounter=0;
             for (String key : keys) {
                 JsonElement element = rootObject.get(key);
 
@@ -88,17 +90,19 @@ public class GurionRockRunner {
             timeService=new TimeService(tickTime,duration,statisticalFolder);
             System.out.println("Gurion Rock Runner start threads");
 //            Start the simulation.
+            List<Thread> allThreads=new LinkedList<>();
             if(poseService!=null)
-                new Thread(poseService).start();
-            for(CameraService c: camerasServices){
-                new Thread(c).start();
+                allThreads.add(new Thread(poseService));
+            for(CameraService c: camerasServices)
+                allThreads.add(new Thread(c));
+            for(LiDarService l: liDarServices)
+                allThreads.add(new Thread(l));
+            allThreads.add(new Thread(fusionSlamService));
+            allThreads.add(new Thread(timeService));
+            MessageBusImpl.latch=new CountDownLatch(allThreads.size());
+            for (Thread t : allThreads) {
+                t.start();
             }
-            for(LiDarService l: liDarServices){
-                new Thread(l).start();
-            }
-            new Thread(fusionSlamService).start();
-            new Thread(timeService).start();
-
         }
         return;
     }

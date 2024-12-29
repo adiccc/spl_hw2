@@ -16,7 +16,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
 	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
 	private ConcurrentHashMap<Event,Future> eventsFuture;
-
+	public static CountDownLatch latch;
 	private static class MessageBusHolder{
 		private static final MessageBusImpl INSTANCE = new MessageBusImpl();
 	}
@@ -129,10 +129,10 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
-		System.out.println("Waiting for message");
-		System.out.println(m.getClass());
-			if(t!=null)
+			if(t!=null) {
+				System.out.println("Waiting for message");
 				return t.take();
+			}
 			return null;
 		}
 
