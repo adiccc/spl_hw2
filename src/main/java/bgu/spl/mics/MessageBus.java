@@ -1,5 +1,8 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.objects.DetectedObject;
+import bgu.spl.mics.application.services.LiDarService;
+
 /**
  * The message-bus is a shared object used for communication between
  * micro-services.
@@ -93,5 +96,9 @@ public interface MessageBus {
      *                              to became available.
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
-    
+
+    /*for tests*/
+    boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b);
+    boolean isRegisterToEvent(MicroService m, Class<? extends Event> e);
+
 }

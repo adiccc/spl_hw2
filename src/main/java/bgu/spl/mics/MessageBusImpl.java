@@ -125,12 +125,21 @@ public class MessageBusImpl implements MessageBus {
 		}
 
 	//for test use
-	public  boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
+	public boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
 		if (broadcasts.containsKey(b)){
 			if(broadcasts.get(b).contains(m))
 				return true;
 		}
 		return false;
 	}
+	public boolean isRegisterToEvent(MicroService m, Class<? extends Event> e){
+		if (eventsMapping.containsKey(e)){
+			if(eventsMapping.get(e).contains(m))
+				return true;
+		}
+		return false;
+	}
+
+
 }
 

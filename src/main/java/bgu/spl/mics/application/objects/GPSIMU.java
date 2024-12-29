@@ -23,7 +23,6 @@ public class GPSIMU {
     public GPSIMU(String filePath) {
         PoseList = new ArrayList<>();
         JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
-
         // Get the objects and parse them into cloudPoints list
         Gson gson = new Gson();
         Type objectListType = new TypeToken<List<Pose>>() {}.getType();
