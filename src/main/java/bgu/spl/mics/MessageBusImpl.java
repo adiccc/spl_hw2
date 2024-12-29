@@ -58,6 +58,8 @@ public class MessageBusImpl implements MessageBus {
 					synchronized (t){
 						if(microQueues.containsKey(t))
             				microQueues.get(t).add(b);
+						System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());
+
 						t.notifyAll();
 					}
 			}
@@ -130,7 +132,7 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
 			if(t!=null) {
-				System.out.println("Waiting for message");
+				System.out.println("Waiting for message, Q size : "+t.size());
 				return t.take();
 			}
 			return null;

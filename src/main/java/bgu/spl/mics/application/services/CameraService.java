@@ -43,6 +43,7 @@ public class CameraService extends MicroService {
     @Override
     public void initialize() {//was protected changed for tests
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
+            System.out.println("camera got tick *********");
             DetectedObjectsEvent e = camera.Detect(t.getTime());
             if (e != null) {
                 if(e.isDetectedError())
