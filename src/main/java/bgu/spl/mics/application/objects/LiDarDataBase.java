@@ -1,14 +1,11 @@
 package bgu.spl.mics.application.objects;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import bgu.spl.mics.FileReaderUtil;
+
+import bgu.spl.mics.FileHandelUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,7 +46,7 @@ public class LiDarDataBase {
     }
 
     private void initLidarData(String filePath){
-        JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
+        JsonArray jsonArray = FileHandelUtil.readJsonArray(filePath);
 
         // Get the objects and parse them into cloudPoints list
         Gson gson = new Gson();

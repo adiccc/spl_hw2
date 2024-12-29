@@ -1,7 +1,9 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.FileHandelUtil;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,6 +21,7 @@ public class FusionSlam {
     private ArrayList<LandMark> landMarks;
     private ConcurrentHashMap<Integer, StampedDetectedObjects> maps;
     private StatisticalFolder statisticalFolder;
+    private String outputPath;
     public static int NumberOfSensors;
 
     //TODO use statisticalFolder.increaseNumLandmarks before we add a new landmark to the map
@@ -26,8 +29,8 @@ public class FusionSlam {
     private static class FusionSlamHolder {
         private static FusionSlam instance;
 
-        private static void init(StatisticalFolder statisticalFolder) {
-            instance = new FusionSlam(statisticalFolder);
+        private static void init(StatisticalFolder statisticalFolder, String outputPath) {
+            instance = new FusionSlam(statisticalFolder, outputPath);
         }
     }
 
@@ -43,20 +46,20 @@ public class FusionSlam {
         return FusionSlam.NumberOfSensors;
     }
 
-    private FusionSlam(StatisticalFolder statisticalFolder) {
-        //TODO - check if its ok
+    private FusionSlam(StatisticalFolder statisticalFolder, String outputPath) {
         trackedObjectsevents = new ArrayList<>();
         poses = new ArrayList<>();
         landMarks = new ArrayList<>();
         maps = new ConcurrentHashMap<>();
         this.statisticalFolder = statisticalFolder;
+        this.outputPath = outputPath;
     }
 
-    public static FusionSlam getInstance(StatisticalFolder statisticalFolder) {
+    public static FusionSlam getInstance(StatisticalFolder statisticalFolder, String outputPath) {
         if (FusionSlamHolder.instance == null) {
             synchronized (FusionSlamHolder.class) {
                 if (FusionSlamHolder.instance == null) {
-                    FusionSlamHolder.init(statisticalFolder);
+                    FusionSlamHolder.init(statisticalFolder, outputPath);
                 }
             }
         }
@@ -113,5 +116,30 @@ public class FusionSlam {
             newX = Math.cos(alpha)*cloudPoint.getX() - Math.sin(alpha)*cloudPoint.getY() + p.getX();
             newY = Math.sin(alpha)*cloudPoint.getY() - Math.cos(alpha)*cloudPoint.getX() + p.getY();
         return new CloudPoint(newX,newY);
+    }
+
+    public void createOutputFile(boolean isDetectedError){
+        Gson gson = new Gson();
+        // Serialize each object to JSON
+        String jsonFolder = gson.toJson(statisticalFolder);
+        String jsonLand = gson.toJson(landMarks);
+        if (isDetectedError) {
+
+        }
+        FileHandelUtil.writeJson("{"+jsonFolder+","+jsonLand+"}", this.outputPath+"/output_file.json");
+
+    }
+
+    public String toStringMap(){
+        StringBuilder result = new StringBuilder("\"landMarks\":{");
+        for (LandMark landMark : landMarks) {
+            result.append(landMark.toString()).append(",");
+        }
+
+        if (result.length() > 0 && result.charAt(result.length() - 1) == ',') {
+            result.setLength(result.length() - 1);
+        }
+        result.append("}");
+        return result.toString();
     }
 }

@@ -26,4 +26,8 @@ public class LandMark {
     public void addPoint(CloudPoint point) {
             Coordinates.add(point);
     }
+
+    public String toString(){
+        return Id + "{ Description=" + Description + ", Coordinates=" + Coordinates + "}";
+    }
 }

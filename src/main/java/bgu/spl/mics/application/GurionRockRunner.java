@@ -1,6 +1,6 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.FileReaderUtil;
+import bgu.spl.mics.FileHandelUtil;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.JsonArray;
@@ -29,22 +29,25 @@ public class GurionRockRunner {
      */
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        StatisticalFolder statisticalFolder = new StatisticalFolder();
-        List<Camera> cameras = new ArrayList<>();
-        List<CameraService> camerasServices = new ArrayList<>();
-        List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
-        List<LiDarService> liDarServices = new ArrayList<>();
-        int tickTime=0;
-        int duration=0;
-        TimeService timeService;
-        GPSIMU gpsimu;
-        PoseService poseService=null;
-        FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder));
 
 //        if(args.length>0){
         if(true){
-//            JsonObject rootObject = FileReaderUtil.readJson(args[0]);
-            JsonObject rootObject = FileReaderUtil.readJson("./example_input/configuration_file.json");
+            StatisticalFolder statisticalFolder = new StatisticalFolder();
+            List<Camera> cameras = new ArrayList<>();
+            List<CameraService> camerasServices = new ArrayList<>();
+            List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
+            List<LiDarService> liDarServices = new ArrayList<>();
+            int tickTime=0;
+            int duration=0;
+            TimeService timeService;
+            GPSIMU gpsimu;
+            PoseService poseService=null;
+//            String configurationPath=args[0];
+            String configurationPath="./example_input/configuration_file.json";
+            String outputPath=configurationPath.substring(0,configurationPath.length()-23);
+            FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder, outputPath));
+//            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
+            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input/configuration_file.json");
             Set<String> keys = rootObject.keySet();
 
             for (String key : keys) {
@@ -80,7 +83,7 @@ public class GurionRockRunner {
             }
             timeService=new TimeService(tickTime,duration,statisticalFolder);
 
-            //Start the simulation.
+//            Start the simulation.
 //            if(poseService!=null)
 //                new Thread(poseService).start();
 //            for(CameraService c: camerasServices){
