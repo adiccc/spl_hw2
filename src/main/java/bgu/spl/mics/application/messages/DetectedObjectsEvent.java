@@ -9,13 +9,20 @@ import java.util.List;
 public class DetectedObjectsEvent implements Event<Boolean> {
     private StampedDetectedObjects s;
     private boolean detectedError;
+    private String errorMessage;
+
 
     public DetectedObjectsEvent(List<DetectedObject> detectedObjects, int time){
         s=new StampedDetectedObjects(time, detectedObjects);
         detectedError=false;
+        errorMessage="";
     }
-    public void setDetectedError(boolean detectedError){
-        this.detectedError=detectedError;
+    public void setDetectedError(String description){
+        errorMessage=description;
+        this.detectedError=true;
+    }
+    public String getDetectedError(){
+        return errorMessage;
     }
 
     public boolean isDetectedError(){
