@@ -21,6 +21,7 @@ public class Camera {
     private int frequency;
     public STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
+    private List<DetectedObject> lastDetectedObjects;
     private StatisticalFolder statisticalFolder;
 
     public Camera(int id, int frequency, STATUS status,String filePath, StatisticalFolder statisticalFolder) {
@@ -29,6 +30,7 @@ public class Camera {
         this.status = status;
         initDetectedObjects(filePath);
         this.statisticalFolder = statisticalFolder;
+        this.lastDetectedObjects = null;
     }
     public DetectedObjectsEvent Detect(int time) {
         List<DetectedObject> l = null;
@@ -45,8 +47,10 @@ public class Camera {
                     this.status=STATUS.ERROR;
                 }
             }
-            if(this.status!=STATUS.ERROR)
+            if(this.status!=STATUS.ERROR) {
+                lastDetectedObjects = l;
                 statisticalFolder.increaseNumDetectedObjects(l.size());
+            }
             return dEvent;
         }
         return null;
@@ -71,5 +75,8 @@ public class Camera {
                     detectedObjectList.add(stampedDetectedObjects);
                 }
             }
+        }
+        public List<DetectedObject> getLastDetectedObjects(){
+            return lastDetectedObjects;
         }
     }

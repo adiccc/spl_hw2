@@ -31,7 +31,6 @@ public class CameraService extends MicroService {
      */
     public CameraService(Camera camera) {
         super("cameraService");
-        // TODO Implement this
         this.camera = camera;
         futures = new ConcurrentHashMap<>();
     }
@@ -68,4 +67,7 @@ public class CameraService extends MicroService {
         });
         FusionSlam.addNumberOfSensors();
             }
+        public List<DetectedObject> getLastDetectedObjects(){
+            return camera.getLastDetectedObjects();
+        }
 }

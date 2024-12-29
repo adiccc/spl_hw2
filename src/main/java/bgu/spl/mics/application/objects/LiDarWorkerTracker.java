@@ -70,4 +70,7 @@ public class LiDarWorkerTracker {
     public void processDetectedObjects(DetectedObjectsEvent e){//create tracked object event
         detectedEvents.add(e);
     }
+    public List<TrackedObject> getLastTrackedObjects(){
+        return lastTrackedObjects;
+    }
 }

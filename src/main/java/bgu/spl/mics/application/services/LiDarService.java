@@ -7,6 +7,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.*;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -67,4 +68,9 @@ public class LiDarService extends MicroService {
         subscribeEvent(DetectedObjectsEvent.class,(DetectedObjectsEvent t) -> workerTracker.processDetectedObjects(t));
         FusionSlam.addNumberOfSensors();
     }
+
+    public List<TrackedObject> getLastTrackedObjects(){
+        return workerTracker.getLastTrackedObjects();
+    }
+
 }
