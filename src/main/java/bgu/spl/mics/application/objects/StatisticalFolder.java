@@ -32,4 +32,8 @@ public class StatisticalFolder {
         this.systemRuntime.set(systemRuntime);
     }
 
+    public String toString(){
+        return "StatisticalFolder{"+"systemRuntime="+systemRuntime+", numDetectedObjects="+numDetectedObjects+", numTrackedObjects="+numTrackedObjects+", numLandmarks="+numLandmarks+"}";
+    }
+
 }

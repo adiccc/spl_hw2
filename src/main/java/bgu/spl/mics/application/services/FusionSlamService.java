@@ -43,6 +43,7 @@ public class FusionSlamService extends MicroService {
                 FusionSlam.decreaseNumberOfSensors();
             }
             if (FusionSlam.getNumberOfSensors() == 0) {
+                fusionSlam.createOutputFile(false);
                 terminate();
             }
         });

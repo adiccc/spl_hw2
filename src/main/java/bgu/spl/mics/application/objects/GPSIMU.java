@@ -1,10 +1,8 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.FileReaderUtil;
+import bgu.spl.mics.FileHandelUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -22,7 +20,7 @@ public class GPSIMU {
 
     public GPSIMU(String filePath) {
         PoseList = new ArrayList<>();
-        JsonArray jsonArray = FileReaderUtil.readJson(filePath).getAsJsonArray();
+        JsonArray jsonArray = FileHandelUtil.readJsonArray(filePath);
 
         // Get the objects and parse them into cloudPoints list
         Gson gson = new Gson();

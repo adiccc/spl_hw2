@@ -1,11 +1,8 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.Event;
-import bgu.spl.mics.Future;
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 
-import bgu.spl.mics.FileReaderUtil;
+import bgu.spl.mics.FileHandelUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -57,8 +54,9 @@ public class Camera {
         private void initDetectedObjects (String path){
             Gson gson = new Gson();
             detectedObjectList = new ArrayList<>();
-            JsonObject o = FileReaderUtil.readJson(path);
+            JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
+            System.out.println(System.getProperty("user.dir"));
             // Check if the camera exists in the JSON object
             if (o.has(name)) {
                 JsonArray cameraData = o.getAsJsonArray(name);
