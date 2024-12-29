@@ -34,7 +34,14 @@ public class TimeService extends MicroService {
      * Starts broadcasting TickBroadcast messages and terminates after the specified duration.
      */
     @Override
-    public void initialize() {//was protected changed for tests
+    public void initialize() {
+        MessageBusImpl.latch.countDown();
+        try {
+            MessageBusImpl.latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        //was protected changed for tests
         while (Ticks < Duration) {
             Ticks++;
             sendBroadcast(new TickBroadcast(Ticks));
