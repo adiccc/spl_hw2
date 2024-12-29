@@ -1,6 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.FileReaderUtil;
+import bgu.spl.mics.FileHandelUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
