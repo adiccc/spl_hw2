@@ -41,9 +41,10 @@ public class GurionRockRunner {
         PoseService poseService=null;
         FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder));
 
-        if(args.length >0 ){
-            JsonObject rootObject = FileReaderUtil.readJson(args[0]);
-
+//        if(args.length>0){
+        if(true){
+//            JsonObject rootObject = FileReaderUtil.readJson(args[0]);
+            JsonObject rootObject = FileReaderUtil.readJson("./example_input/configuration_file.json");
             Set<String> keys = rootObject.keySet();
 
             for (String key : keys) {
@@ -80,16 +81,16 @@ public class GurionRockRunner {
             timeService=new TimeService(tickTime,duration,statisticalFolder);
 
             //Start the simulation.
-            if(poseService!=null)
-                new Thread(poseService).start();
-            for(CameraService c: camerasServices){
-                new Thread(c).start();
-            }
-            for(LiDarService l: liDarServices){
-                new Thread(l).start();
-            }
-            new Thread(fusionSlamService).start();
-            new Thread(timeService).start();
+//            if(poseService!=null)
+//                new Thread(poseService).start();
+//            for(CameraService c: camerasServices){
+//                new Thread(c).start();
+//            }
+//            for(LiDarService l: liDarServices){
+//                new Thread(l).start();
+//            }
+//            new Thread(fusionSlamService).start();
+//            new Thread(timeService).start();
 
         }
         return;
