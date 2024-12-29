@@ -12,9 +12,9 @@ import java.util.concurrent.*;
  * All other methods and members you add the class must be private.
  */
 public class MessageBusImpl implements MessageBus {
-	private ConcurrentHashMap<Class<? extends Event>,ConcurrentLinkedQueue<MicroService>> eventsMapping;
-	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Message>> microQueues;
-	private ConcurrentHashMap<Class<? extends Broadcast>,ConcurrentLinkedQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
+	private ConcurrentHashMap<Class<? extends Event>,BlockingQueue<MicroService>> eventsMapping;
+	private ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
+	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
 	private ConcurrentHashMap<Event,Future> eventsFuture;
 
 	private static class MessageBusHolder{
@@ -32,12 +32,12 @@ public class MessageBusImpl implements MessageBus {
 	}
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		eventsMapping.computeIfAbsent(type, key -> new ConcurrentLinkedQueue<>()).add(m);
+		eventsMapping.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		broadcasts.computeIfAbsent(type, key -> new ConcurrentLinkedQueue<>()).add(m);
+		broadcasts.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		ConcurrentLinkedQueue<MicroService> queue = broadcasts.get(b.getClass());
+		BlockingQueue<MicroService> queue = broadcasts.get(b.getClass());
 		if (queue != null) {
 			for (MicroService t : queue) {
 					synchronized (t){
@@ -69,7 +69,7 @@ public class MessageBusImpl implements MessageBus {
 			return null;
 		}
 		else{
-			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e.getClass());
+			BlockingQueue<MicroService> t=eventsMapping.get(e.getClass());
 			boolean ex=false;
 			MicroService temp=null;
 			while(!ex && !t.isEmpty()){
@@ -93,7 +93,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		microQueues.computeIfAbsent(m, key -> new ConcurrentLinkedQueue<>());
+		microQueues.computeIfAbsent(m, key -> new LinkedBlockingQueue<>());
 	}
 
 	@Override
@@ -101,14 +101,14 @@ public class MessageBusImpl implements MessageBus {
 			synchronized (m) {
 				if(microQueues.containsKey(m)) {
 					microQueues.remove(m);
-					for (ConcurrentLinkedQueue<MicroService> microServices : eventsMapping.values()) {
+					for (BlockingQueue<MicroService> microServices : eventsMapping.values()) {
 						for (MicroService b : microServices) {
 							if (b.equals(m)) {
 								microServices.remove(b);
 							}
 						}
 					}
-					for (ConcurrentLinkedQueue<MicroService> microServices : broadcasts.values()) {
+					for (BlockingQueue<MicroService> microServices : broadcasts.values()) {
 						for (MicroService b : microServices) {
 							if (b.equals(m)) {
 								microServices.remove(b);
@@ -122,7 +122,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-			ConcurrentLinkedQueue<Message> t=microQueues.get(m);
+			BlockingQueue<Message> t=microQueues.get(m);
 			if(t!=null)
 				return t.poll();
 			return null;
@@ -149,7 +149,5 @@ public class MessageBusImpl implements MessageBus {
 		}
 		return false;
 	}
-
-
 }
 
