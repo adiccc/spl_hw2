@@ -41,7 +41,7 @@ public class FusionSlamService extends MicroService {
      * and sets up callbacks for updating the global map.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {//was protected changed for tests
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {});
         subscribeEvent(TrackedObjectsEvent.class,(TrackedObjectsEvent t) -> fusionSlam.updateMap(t));
         subscribeEvent(PoseEvent.class,(PoseEvent t) -> fusionSlam.updatePose(t));
