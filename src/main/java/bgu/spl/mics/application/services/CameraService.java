@@ -29,8 +29,8 @@ public class CameraService extends MicroService {
      *
      * @param camera The Camera object that this service will use to detect objects.
      */
-    public CameraService(Camera camera, int id) {
-        super("camera");
+    public CameraService(Camera camera) {
+        super("cameraService");
         // TODO Implement this
         this.camera = camera;
         futures = new ConcurrentHashMap<>();
@@ -44,10 +44,13 @@ public class CameraService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
-    DetectedObjectsEvent e = camera.Detect(t.getTime());
-    if (e != null) {
-        futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
-    }
+            DetectedObjectsEvent e = camera.Detect(t.getTime());
+            if (e != null) {
+                if(e.isDetectedError())
+                    MessageBusImpl.getInstance().sendBroadcast(new CrashedBroadcast(this));
+                else
+                    futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
+            }
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
             if (camera != null) {
@@ -64,5 +67,5 @@ public class CameraService extends MicroService {
             }
         });
         FusionSlam.addNumberOfSensors();
-    }
+            }
 }

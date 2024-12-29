@@ -33,7 +33,7 @@ public class LiDarWorkerTracker {
     }
     public TrackedObjectsEvent fetchData(TickBroadcast t){
         for(DetectedObjectsEvent e: detectedEvents){
-                if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){
+                if(e.getStampedDetectedObjects().getTime()+frequency==t.getTime()){
                     detectedEvents.remove(e);
                     return sendTrackedEvent(e,t.getTime());//check again
                 }
@@ -50,10 +50,21 @@ public class LiDarWorkerTracker {
             }
         }
         if(lastTrackedObjects.size()>0){
-            statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
-            MessageBusImpl.getInstance().complete(e,true);
-            return new TrackedObjectsEvent(lastTrackedObjects);
+            TrackedObjectsEvent tEvent= new TrackedObjectsEvent(lastTrackedObjects);
+            for(TrackedObject t:lastTrackedObjects){
+                if (t.getId().equals("ERROR")) {
+                    tEvent.setDetectedError(true);
+                    this.status=STATUS.ERROR;
+                    MessageBusImpl.getInstance().complete(e, false);
+                }
+            }
+            if(this.status!=STATUS.ERROR) {
+                statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
+                MessageBusImpl.getInstance().complete(e, true);
+            }
+            return tEvent;
         }
+        MessageBusImpl.getInstance().complete(e, false);
         return null;
     }
     public void processDetectedObjects(DetectedObjectsEvent e){//create tracked object event

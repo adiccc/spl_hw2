@@ -136,7 +136,7 @@ public class GurionRockRunner {
         List<CameraService> camerasServices = new ArrayList<>();
         int index=1;
         for (Camera camera : cameras) {
-            camerasServices.add(new CameraService(camera, index));
+            camerasServices.add(new CameraService(camera));
             index++;
         }
         return camerasServices;

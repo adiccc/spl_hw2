@@ -26,7 +26,7 @@ public class LiDarService extends MicroService {
      * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service will use to process data.
      */
     public LiDarService(LiDarWorkerTracker LiDarWorkerTracker, int id) {
-        super("LiDar");
+        super("LiDarService");
         this.workerTracker = LiDarWorkerTracker;
         futures = new ConcurrentHashMap<>();
     }
@@ -44,7 +44,10 @@ public class LiDarService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
         TrackedObjectsEvent e = workerTracker.fetchData(t);
         if (e != null) {
-            futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
+            if(e.isDetectedError())
+                MessageBusImpl.getInstance().sendBroadcast(new CrashedBroadcast(this));
+            else
+                futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
         }
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
