@@ -128,7 +128,7 @@ public class MessageBusImpl implements MessageBus {
 		System.out.println("Waiting for message");
 		System.out.println(m.getClass());
 			if(t!=null)
-				return t.poll();
+				return t.take();
 			return null;
 		}
 
