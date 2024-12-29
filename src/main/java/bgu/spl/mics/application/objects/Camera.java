@@ -44,7 +44,7 @@ public class Camera {
             DetectedObjectsEvent dEvent=new DetectedObjectsEvent(l, time);
             for(DetectedObject detectedObject : l){
                 if(detectedObject.getId().equals("ERROR")) {
-                    dEvent.setDetectedError(true);
+                    dEvent.setDetectedError(detectedObject.getDescription());
                     this.status=STATUS.ERROR;
                 }
             }
@@ -69,7 +69,6 @@ public class Camera {
                     // Get the detected objects and parse them into DetectedObject list
                     Type objectListType = new TypeToken<List<DetectedObject>>() {}.getType();
                     List<DetectedObject> detectedObjects = gson.fromJson(cameraEntry.getAsJsonArray("detectedObjects"), objectListType);
-
                     // Create StampedDetectedObjects instance and add it to the list
                     StampedDetectedObjects stampedDetectedObjects = new StampedDetectedObjects(time, detectedObjects);
                     detectedObjectList.add(stampedDetectedObjects);

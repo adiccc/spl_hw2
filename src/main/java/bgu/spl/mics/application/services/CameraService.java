@@ -47,7 +47,7 @@ public class CameraService extends MicroService {
             DetectedObjectsEvent e = camera.Detect(t.getTime());
             if (e != null) {
                 if(e.isDetectedError())
-                    MessageBusImpl.getInstance().sendBroadcast(new CrashedBroadcast(this));
+                    MessageBusImpl.getInstance().sendBroadcast(new CrashedBroadcast(this,e.getDetectedError()));
                 else
                     futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
             }
