@@ -65,14 +65,15 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		if (!eventsMapping.containsKey(e)) {
+		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}
 		else{
 			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e.getClass());
 			boolean ex=false;
+			MicroService temp=null;
 			while(!ex && !t.isEmpty()){
-				MicroService temp=t.poll();
+				temp=t.poll();
 				synchronized (temp){
 				if(microQueues.containsKey(temp)) {
 					microQueues.get(temp).add(e);
@@ -80,6 +81,9 @@ public class MessageBusImpl implements MessageBus {
 				}
 				temp.notifyAll();
 			}
+			}
+			if(temp!=null){
+				t.add(temp);
 			}
 			Future<T> f=new Future<T>();
 			eventsFuture.put(e,f);
@@ -136,6 +140,12 @@ public class MessageBusImpl implements MessageBus {
 		if (eventsMapping.containsKey(e)){
 			if(eventsMapping.get(e).contains(m))
 				return true;
+		}
+		return false;
+	}
+	public boolean isMicroServiceRegistered(MicroService m){
+		if(microQueues.containsKey(m)){
+			return true;
 		}
 		return false;
 	}

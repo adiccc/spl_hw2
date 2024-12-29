@@ -40,7 +40,7 @@ public class LiDarService extends MicroService {
 
     }
     @Override
-    protected void initialize() {
+    public void initialize() {//was protected changed for tests
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
         TrackedObjectsEvent e = workerTracker.fetchData(t);
         if (e != null) {

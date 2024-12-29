@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.services.CameraService;
+
 /**
  * The message-bus is a shared object used for communication between
  * micro-services.
@@ -98,4 +100,5 @@ public interface MessageBus {
     boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b);
     boolean isRegisterToEvent(MicroService m, Class<? extends Event> e);
 
+    boolean isMicroServiceRegistered(MicroService m);
 }
