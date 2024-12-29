@@ -139,7 +139,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
         this.terminated=true;
-        MessageBusImpl.getInstance().unregister(this);
     }
 
     /**
@@ -157,14 +156,17 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         initialize();
-         MessageBusImpl.getInstance().register(this);
+        MessageBusImpl.getInstance().register(this);
         while (!terminated) {
             try {
                 Message m=MessageBusImpl.getInstance().awaitMessage(this);
-                messageCallback.get(m).call(m);//check again
+                Callback c=messageCallback.get(m);
+                if (c!=null)
+                    c.call(m);
             } catch (InterruptedException e) {
             }
         }
+        MessageBusImpl.getInstance().unregister(this);
     }
 
 }

@@ -2,10 +2,8 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.PoseEvent;
-import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.FusionSlam;
-import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Pose;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
@@ -40,5 +38,14 @@ public class FusionSlamService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {});
         subscribeEvent(TrackedObjectsEvent.class,(TrackedObjectsEvent t) -> fusionSlam.updateMap(t));
         subscribeEvent(PoseEvent.class,(PoseEvent t) -> fusionSlam.updatePose(t));
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {//only when all sensors terminate terminates
+            if ("camera".equals(c.getSender().getName())||"LiDar".equals(c.getSender().getName())) {
+                FusionSlam.decreaseNumberOfSensors();
+            }
+            if (FusionSlam.getNumberOfSensors() == 0) {
+                terminate();
+            }
+        });
+        subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> terminate());
     }
 }

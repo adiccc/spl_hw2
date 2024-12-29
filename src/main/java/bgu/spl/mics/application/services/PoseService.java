@@ -3,7 +3,9 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Broadcast;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.PoseEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.messages.TickBroadcast;
 
@@ -29,6 +31,7 @@ public class PoseService extends MicroService {
      */
     @Override
     protected void initialize() {
-        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) ->sendEvent(new PoseEvent(gpsimu.getPose())));
+        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> sendEvent(new PoseEvent(gpsimu.getPose())));
+        subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast t) -> terminate());
     }
 }

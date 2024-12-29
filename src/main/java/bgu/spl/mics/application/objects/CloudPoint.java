@@ -15,4 +15,17 @@ public class CloudPoint {
         this.x = x;
         this.y = y;
     }
+    public void mergePoints(CloudPoint point) {
+        this.x=(this.x+ point.x)/2;
+        this.y=(this.y+ point.y)/2;
+    }
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
+    }
+    public double getDistance() {
+        return (double) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
 }

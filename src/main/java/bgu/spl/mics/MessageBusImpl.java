@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Event>,BlockingQueue<MicroService>> eventsMapping;
 	private ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
-	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;
+	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
 	private ConcurrentHashMap<Event,Future> eventsFuture;
 
 	private static class MessageBusHolder{

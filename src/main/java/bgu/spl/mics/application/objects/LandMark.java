@@ -10,6 +10,7 @@ public class LandMark {
     private String Id;
     private String Description;
     private List<CloudPoint> Coordinates;
+    private CloudPoint currentPose;
 
     public LandMark(String Id, String Description, List<CloudPoint> Coordinates) {
         this.Id = Id;
@@ -22,7 +23,7 @@ public class LandMark {
     public String getDescription() {
         return Description;
     }
-    public void mergePoints(CloudPoint[] point) {
-
+    public void addPoint(CloudPoint point) {
+            Coordinates.add(point);
     }
 }

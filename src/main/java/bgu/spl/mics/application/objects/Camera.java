@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 
@@ -20,7 +21,7 @@ import java.util.List;
 public class Camera {
     private int id;
     private int frequency;
-    private STATUS status;
+    public STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
     private StatisticalFolder statisticalFolder;
 
@@ -31,7 +32,7 @@ public class Camera {
         initDetectedObjects(filePath);
         this.statisticalFolder = statisticalFolder;
     }
-    public void Detect(int time) {
+    public DetectedObjectsEvent Detect(int time) {
         List<DetectedObject> l = null;
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
             if (detectedObjects.getTime() + frequency == time) {
@@ -40,8 +41,9 @@ public class Camera {
         }
         if (l != null){
             statisticalFolder.increaseNumDetectedObjects(l.size());
-            MessageBusImpl.getInstance().sendEvent(new DetectedObjectsEvent(l, time));
+            return new DetectedObjectsEvent(l, time);
         }
+        return null;
     }
         private void initDetectedObjects (String path){
             Gson gson = new Gson();

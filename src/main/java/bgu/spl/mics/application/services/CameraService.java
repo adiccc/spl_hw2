@@ -1,17 +1,17 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.Callback;
-import bgu.spl.mics.Event;
-import bgu.spl.mics.MessageBusImpl;
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 import bgu.spl.mics.application.objects.Camera;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.DetectedObject;
+import bgu.spl.mics.application.objects.FusionSlam;
+import bgu.spl.mics.application.objects.STATUS;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CameraService is responsible for processing data from the camera and
@@ -22,15 +22,18 @@ import java.util.List;
  */
 public class CameraService extends MicroService {
     private final Camera camera;
+    private final ConcurrentHashMap<Event, Future> futures;
+
     /**
      * Constructor for CameraService.
      *
      * @param camera The Camera object that this service will use to detect objects.
      */
-    public CameraService(Camera camera,int id) {
-        super("camera"+id);
+    public CameraService(Camera camera, int id) {
+        super("camera");
         // TODO Implement this
         this.camera = camera;
+        futures = new ConcurrentHashMap<>();
     }
 
     /**
@@ -40,8 +43,26 @@ public class CameraService extends MicroService {
      */
     @Override
     protected void initialize() {
-       subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> camera.Detect(t.getTime()));
-       subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast c)-> terminate());
-       subscribeBroadcast(TerminatedBroadcast.class,(TerminatedBroadcast c)-> {});//do we need to fix?
+        subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
+    DetectedObjectsEvent e = camera.Detect(t.getTime());
+    if (e != null) {
+        futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
+    }
+        });
+        subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
+            if (camera != null) {
+                camera.status = STATUS.DOWN;
+            }
+            terminate();
+        });
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
+            if (camera != null) {
+                camera.status = STATUS.DOWN;
+            }
+            if ("timer".equals(c.getSender().getName())) {
+                terminate();
+            }
+        });
+        FusionSlam.addNumberOfSensors();
     }
 }

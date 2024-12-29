@@ -37,7 +37,7 @@ public class TimeService extends MicroService {
     protected void initialize() {
         while (Ticks < Duration) {
             Ticks++;
-            MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast(Ticks));
+            sendBroadcast(new TickBroadcast(Ticks));
             statFolder.setSystemRuntime(this.Ticks);
             try {
                 Thread.sleep(TickTime);

@@ -1,9 +1,13 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Event;
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.*;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * LiDarService is responsible for processing data from the LiDAR sensor and
@@ -15,14 +19,16 @@ import bgu.spl.mics.application.objects.*;
  */
 public class LiDarService extends MicroService {
     private LiDarWorkerTracker workerTracker;
+    private final ConcurrentHashMap<Event, Future> futures;
     /**
      * Constructor for LiDarService.
      *
      * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service will use to process data.
      */
     public LiDarService(LiDarWorkerTracker LiDarWorkerTracker, int id) {
-        super("LiDar"+id);
+        super("LiDar");
         this.workerTracker = LiDarWorkerTracker;
+        futures = new ConcurrentHashMap<>();
     }
 
     /**
@@ -35,10 +41,27 @@ public class LiDarService extends MicroService {
     }
     @Override
     protected void initialize() {
-        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> workerTracker.fetchData(t));
-        subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast t) -> terminate());
-        subscribeBroadcast(TerminatedBroadcast.class,(TerminatedBroadcast t) -> {});//to fucking do
+        subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
+        TrackedObjectsEvent e = workerTracker.fetchData(t);
+        if (e != null) {
+            futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
+        }
+        });
+        subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
+            if (workerTracker != null) {
+                workerTracker.status = STATUS.DOWN;
+            }
+            terminate();
+        });
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
+            if(workerTracker!=null){
+                workerTracker.status=STATUS.DOWN;
+            }
+            if ("timer".equals(c.getSender().getName())) {
+                terminate();
+            }
+        });
         subscribeEvent(DetectedObjectsEvent.class,(DetectedObjectsEvent t) -> workerTracker.processDetectedObjects(t));
+        FusionSlam.addNumberOfSensors();
     }
-
 }

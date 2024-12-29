@@ -16,7 +16,7 @@ import java.util.List;
 public class LiDarWorkerTracker {
     private int id;
     private int frequency;
-    private STATUS status;
+    public STATUS status;
     private List<TrackedObject> lastTrackedObjects;
     private List<DetectedObjectsEvent> detectedEvents;
     private String filePath;
@@ -31,27 +31,30 @@ public class LiDarWorkerTracker {
         this.filePath = filePath;
         this.statisticalFolder = statisticalFolder;
     }
-    public void fetchData(TickBroadcast t){
-            for(DetectedObjectsEvent e: detectedEvents){
-                if(e.getTime()+frequency==t.getTime()){
-                    sendTrackedEvent(e,t.getTime());
+    public TrackedObjectsEvent fetchData(TickBroadcast t){
+        for(DetectedObjectsEvent e: detectedEvents){
+                if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){
                     detectedEvents.remove(e);
+                    return sendTrackedEvent(e,t.getTime());//check again
                 }
             }
+        return null;
     }
-    public void sendTrackedEvent(DetectedObjectsEvent e,int time){
-        List<DetectedObject> dec=e.getDetectedObjects();
+    public TrackedObjectsEvent sendTrackedEvent(DetectedObjectsEvent e,int time){
+        StampedDetectedObjects dec=e.getStampedDetectedObjects();
         lastTrackedObjects=new ArrayList<>();
-        for(DetectedObject d:dec){
+        for(DetectedObject d:dec.getDetectedObjects()){
             StampedCloudPoints s=LiDarDataBase.getInstance(filePath).getCloudPoint(d,time);
             if(s!=null){
-                lastTrackedObjects.add(new TrackedObject(d.getId(),s.getTime(),d.getDescription(),s.getCloudPoints().toArray(new CloudPoint[0])));
+                lastTrackedObjects.add(new TrackedObject(d.getId(),s.getTime(),d.getDescription(),s.getCloudPoints()));//convert to list<cloudpoints>
             }
         }
         if(lastTrackedObjects.size()>0){
             statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
-            MessageBusImpl.getInstance().sendEvent(new TrackedObjectsEvent(lastTrackedObjects));
+            MessageBusImpl.getInstance().complete(e,true);
+            return new TrackedObjectsEvent(lastTrackedObjects);
         }
+        return null;
     }
     public void processDetectedObjects(DetectedObjectsEvent e){//create tracked object event
         detectedEvents.add(e);
