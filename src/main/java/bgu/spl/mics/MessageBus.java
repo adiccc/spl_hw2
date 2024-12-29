@@ -93,5 +93,9 @@ public interface MessageBus {
      *                              to became available.
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
-    
+
+    /*for tests*/
+    boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b);
+    boolean isRegisterToEvent(MicroService m, Class<? extends Event> e);
+
 }
