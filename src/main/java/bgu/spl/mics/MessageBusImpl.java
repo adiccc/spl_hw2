@@ -69,7 +69,7 @@ public class MessageBusImpl implements MessageBus {
 			return null;
 		}
 		else{
-			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e);
+			ConcurrentLinkedQueue<MicroService> t=eventsMapping.get(e.getClass());
 			boolean ex=false;
 			while(!ex && !t.isEmpty()){
 				MicroService temp=t.poll();
