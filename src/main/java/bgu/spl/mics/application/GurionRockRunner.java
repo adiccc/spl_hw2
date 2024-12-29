@@ -55,25 +55,30 @@ public class GurionRockRunner {
 
                 switch (key) {
                     case "Cameras":
+                        System.out.println("Cameras");
                         cameras=handleCameras(element.getAsJsonObject(),statisticalFolder);
                         camerasServices=handelCamerasService(cameras);
                         break;
 
                     case "LidarWorkers":
+                        System.out.println("LidarWorkers");
                         liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
                     case "poseJsonFile":
+                        System.out.println("poseJsonFile");
                         gpsimu=new GPSIMU(element.getAsString());
                         poseService=new PoseService(gpsimu);
                         break;
 
                     case "TickTime":
+                        System.out.println("TickTime");
                         tickTime=element.getAsInt();
                         break;
 
                     case "Duration":
+                        System.out.println("Duration");
                         duration=element.getAsInt();
                         break;
 
@@ -82,7 +87,7 @@ public class GurionRockRunner {
                 }
             }
             timeService=new TimeService(tickTime,duration,statisticalFolder);
-
+            System.out.println("Gurion Rock Runner start threads");
 //            Start the simulation.
             if(poseService!=null)
                 new Thread(poseService).start();

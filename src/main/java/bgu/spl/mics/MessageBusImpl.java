@@ -49,6 +49,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
+		System.out.println("mmmmm"+b.getClass());
 		ConcurrentLinkedQueue<MicroService> queue = broadcasts.get(b.getClass());
 		if (queue != null) {
 			for (MicroService t : queue) {
@@ -65,6 +66,7 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
+		System.out.println("Sending event: " + e);
 		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}
@@ -93,11 +95,13 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
+		System.out.println("Registering microservice "+m);
 		microQueues.computeIfAbsent(m, key -> new ConcurrentLinkedQueue<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
+		System.out.println("Unregistering microservice "+m);
 			synchronized (m) {
 				if(microQueues.containsKey(m)) {
 					microQueues.remove(m);
@@ -122,6 +126,8 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
+		System.out.println("Waiting for message");
+		System.out.println(m.getClass());
 			ConcurrentLinkedQueue<Message> t=microQueues.get(m);
 			if(t!=null)
 				return t.poll();
