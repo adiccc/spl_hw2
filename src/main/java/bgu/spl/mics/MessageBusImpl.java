@@ -32,11 +32,13 @@ public class MessageBusImpl implements MessageBus {
 	}
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		System.out.println("subscribeEvent "+m.getClass());
 		eventsMapping.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		System.out.println("subscribeBroadcast "+m.getClass());
 		broadcasts.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
@@ -49,6 +51,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
+		System.out.println("sendBroadcast");
 		BlockingQueue<MicroService> queue = broadcasts.get(b.getClass());
 		if (queue != null) {
 			for (MicroService t : queue) {
@@ -94,6 +97,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
+		System.out.println("Registering MicroService: " + m);
 		microQueues.computeIfAbsent(m, key -> new LinkedBlockingQueue<>());
 	}
 

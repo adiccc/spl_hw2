@@ -42,6 +42,8 @@ public class TimeService extends MicroService {
             try {
                 Thread.sleep(TickTime);
             } catch (InterruptedException e) {}
+
+            System.out.println("---time tick "+Ticks);
         }
         MessageBusImpl.getInstance().sendBroadcast(new TerminatedBroadcast(this));
     }

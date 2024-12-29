@@ -50,11 +50,13 @@ public class CameraService extends MicroService {
                 else
                     futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
             }
+            System.out.println("camera got tick");
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
             if (camera != null) {
                 camera.status = STATUS.DOWN;
             }
+            System.out.println("camera going down - terminated, something got terminated");
             terminate();
         });
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
