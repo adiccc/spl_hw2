@@ -59,10 +59,10 @@ public class CameraService extends MicroService {
             terminate();
         });
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
-            if (camera != null) {
-                camera.status = STATUS.DOWN;
-            }
             if ("timer".equals(c.getSender().getName())) {
+                if (camera != null) {
+                    camera.status = STATUS.DOWN;
+                }
                 terminate();
             }
         });

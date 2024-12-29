@@ -39,6 +39,7 @@ public class FusionSlamService extends MicroService {
         subscribeEvent(TrackedObjectsEvent.class,(TrackedObjectsEvent t) -> fusionSlam.updateMap(t));
         subscribeEvent(PoseEvent.class,(PoseEvent t) -> fusionSlam.updatePose(t));
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {//only when all sensors terminate terminates
+            System.out.println("TerminatedBroadcast fusion");
             if ("cameraService".equals(c.getSender().getName())||"LiDarService".equals(c.getSender().getName())) {
                 FusionSlam.decreaseNumberOfSensors();
             }

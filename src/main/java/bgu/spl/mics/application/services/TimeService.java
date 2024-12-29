@@ -41,9 +41,9 @@ public class TimeService extends MicroService {
             statFolder.setSystemRuntime(this.Ticks);
             try {
                 Thread.sleep(TickTime);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
         }
         MessageBusImpl.getInstance().sendBroadcast(new TerminatedBroadcast(this));
     }
+
 }
