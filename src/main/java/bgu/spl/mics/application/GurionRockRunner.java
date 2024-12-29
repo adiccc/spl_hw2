@@ -84,16 +84,16 @@ public class GurionRockRunner {
             timeService=new TimeService(tickTime,duration,statisticalFolder);
 
 //            Start the simulation.
-//            if(poseService!=null)
-//                new Thread(poseService).start();
-//            for(CameraService c: camerasServices){
-//                new Thread(c).start();
-//            }
-//            for(LiDarService l: liDarServices){
-//                new Thread(l).start();
-//            }
-//            new Thread(fusionSlamService).start();
-//            new Thread(timeService).start();
+            if(poseService!=null)
+                new Thread(poseService).start();
+            for(CameraService c: camerasServices){
+                new Thread(c).start();
+            }
+            for(LiDarService l: liDarServices){
+                new Thread(l).start();
+            }
+            new Thread(fusionSlamService).start();
+            new Thread(timeService).start();
 
         }
         return;

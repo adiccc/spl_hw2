@@ -1,8 +1,5 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.objects.DetectedObject;
-import bgu.spl.mics.application.services.LiDarService;
-
 /**
  * The message-bus is a shared object used for communication between
  * micro-services.
