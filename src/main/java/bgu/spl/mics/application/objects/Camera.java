@@ -33,7 +33,7 @@ public class Camera {
     public DetectedObjectsEvent Detect(int time) {
         List<DetectedObject> l = null;
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
-            if (detectedObjects.getTime() + frequency == time) {
+            if (detectedObjects.getTime() + frequency <= time) {
                 l = detectedObjects.getDetectedObjects();
             }
         }
@@ -56,7 +56,6 @@ public class Camera {
             detectedObjectList = new ArrayList<>();
             JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
-            System.out.println(System.getProperty("user.dir"));
             // Check if the camera exists in the JSON object
             if (o.has(name)) {
                 JsonArray cameraData = o.getAsJsonArray(name);
