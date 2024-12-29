@@ -57,7 +57,6 @@ public class Camera {
                 for (int i = 0; i < cameraData.size(); i++) {
                     JsonObject cameraEntry = cameraData.get(i).getAsJsonObject();
                     int time = cameraEntry.get("time").getAsInt();
-
                     // Get the detected objects and parse them into DetectedObject list
                     Type objectListType = new TypeToken<List<DetectedObject>>() {}.getType();
                     List<DetectedObject> detectedObjects = gson.fromJson(cameraEntry.getAsJsonArray("detectedObjects"), objectListType);

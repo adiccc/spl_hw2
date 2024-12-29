@@ -109,8 +109,9 @@ public class FusionSlam {
 
     public CloudPoint convertToChargingStation(CloudPoint cloudPoint, Pose p) {
         double newX,newY;
-            newX = p.getX() + cloudPoint.getDistance() * Math.cos(p.getYaw() * Math.PI / 180);
-            newY = p.getY() + cloudPoint.getDistance() * Math.sin(p.getYaw() * Math.PI / 180);
+        double alpha=p.getYaw() * Math.PI / 180;
+            newX = Math.cos(alpha)*cloudPoint.getX() - Math.sin(alpha)*cloudPoint.getY() + p.getX();
+            newY = Math.sin(alpha)*cloudPoint.getY() - Math.cos(alpha)*cloudPoint.getX() + p.getY();
         return new CloudPoint(newX,newY);
     }
 }
