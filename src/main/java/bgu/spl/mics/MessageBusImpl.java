@@ -65,6 +65,7 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
+		System.out.println("Sending event: " + e);
 		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}
@@ -98,6 +99,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) {
+		System.out.println("Unregistering microservice "+m);
 			synchronized (m) {
 				if(microQueues.containsKey(m)) {
 					microQueues.remove(m);
@@ -123,6 +125,8 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
+		System.out.println("Waiting for message");
+		System.out.println(m.getClass());
 			if(t!=null)
 				return t.poll();
 			return null;
@@ -149,5 +153,7 @@ public class MessageBusImpl implements MessageBus {
 		}
 		return false;
 	}
+
+
 }
 

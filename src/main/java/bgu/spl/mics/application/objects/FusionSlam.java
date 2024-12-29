@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.ErrorReport;
 import bgu.spl.mics.FileHandelUtil;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
@@ -118,28 +119,36 @@ public class FusionSlam {
         return new CloudPoint(newX,newY);
     }
 
-    public void createOutputFile(boolean isDetectedError){
+    public void createOutputFile(ErrorReport errorReport){
         Gson gson = new Gson();
         // Serialize each object to JSON
         String jsonFolder = gson.toJson(statisticalFolder);
         String jsonLand = gson.toJson(landMarks);
-        if (isDetectedError) {
-
-        }
-        FileHandelUtil.writeJson("{"+jsonFolder+","+jsonLand+"}", this.outputPath+"/output_file.json");
-
+        String result;
+        if(errorReport!=null){
+            String jsonReport = gson.toJson(errorReport);
+            result ="{"+jsonFolder+","+jsonLand+","+jsonReport+"}";
+        } else
+                result="{"+jsonFolder+","+jsonLand+"}";
+        FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
     }
 
-    public String toStringMap(){
-        StringBuilder result = new StringBuilder("\"landMarks\":{");
-        for (LandMark landMark : landMarks) {
-            result.append(landMark.toString()).append(",");
-        }
+//    public String toStringMap(){
+//        StringBuilder result = new StringBuilder("\"landMarks\":{");
+//        for (LandMark landMark : landMarks) {
+//            result.append(landMark.toString()).append(",");
+//        }
+//
+//        if (result.length() > 0 && result.charAt(result.length() - 1) == ',') {
+//            result.setLength(result.length() - 1);
+//        }
+//        result.append("}");
+//        return result.toString();
+//    }
 
-        if (result.length() > 0 && result.charAt(result.length() - 1) == ',') {
-            result.setLength(result.length() - 1);
-        }
-        result.append("}");
-        return result.toString();
+    public List<PoseEvent> getPoses(){
+        return poses;
     }
+
+
 }
