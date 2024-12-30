@@ -35,11 +35,15 @@ public class Camera {
     }
     public DetectedObjectsEvent Detect(int time) {
         List<DetectedObject> l = null;
+        List<StampedDetectedObjects> toRemove = new ArrayList<>();
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
             if (detectedObjects.getTime() + frequency <= time) {
                 l = detectedObjects.getDetectedObjects();
-                detectedObjectList.remove(detectedObjects);
+                toRemove.add(detectedObjects);
             }
+        }
+        for(StampedDetectedObjects detectedObjects : toRemove) {
+            this.detectedObjectList.remove(detectedObjects);
         }
         if (l != null){
             DetectedObjectsEvent dEvent=new DetectedObjectsEvent(l, time);

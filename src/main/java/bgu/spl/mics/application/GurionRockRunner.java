@@ -46,6 +46,7 @@ public class GurionRockRunner {
 //            String configurationPath=args[0];
             String configurationPath="./example_input/configuration_file.json";
             String folderPath=configurationPath.substring(0,configurationPath.length()-23);
+            //init fusion slam instance
             FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
@@ -70,7 +71,7 @@ public class GurionRockRunner {
 
                     case "poseJsonFile":
                         System.out.println("poseJsonFile");
-                        gpsimu=new GPSIMU(element.getAsString());
+                        gpsimu=new GPSIMU(folderPath+element.getAsString().substring(1));
                         poseService=new PoseService(gpsimu);
                         break;
 
@@ -128,7 +129,7 @@ public class GurionRockRunner {
         JsonArray workersConfig = jsonObject.getAsJsonArray("LidarConfigurations");
 
         // Get the lidar database file path
-        String filePath=folderPath+jsonObject.get("lidars_data_path").getAsString().substring(1);
+        String filePath=folderPath+jsonObject.get("lidars_data_path").getAsString().substring(2);
         LiDarDataBase.getInstance(filePath).setPath(filePath);
 
         // Iterate through the cameras configurations
@@ -164,7 +165,7 @@ public class GurionRockRunner {
         JsonArray camerasConfig = jsonObject.getAsJsonArray("CamerasConfigurations");
 
         // Get the camera data file path
-        String cameraDataPath = folderPath+jsonObject.get("camera_datas_path").getAsString().substring(1);
+        String cameraDataPath = folderPath+jsonObject.get("camera_datas_path").getAsString().substring(2);
 
         // Iterate through the cameras configurations
         for (JsonElement cameraElement : camerasConfig) {

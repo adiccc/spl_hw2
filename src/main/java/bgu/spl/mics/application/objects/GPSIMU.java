@@ -15,7 +15,6 @@ import java.util.List;
  * Provides information about the robot's position and movement.
  */
 public class GPSIMU {
-    private int currentTick;
     private STATUS status;
     private List<Pose> PoseList;
 
@@ -25,10 +24,7 @@ public class GPSIMU {
         this.PoseList= Parser.deserializeGPSData(jsonArray);
     }
 
-    public Pose getPose(){
-        return PoseList.get(currentTick);
-    }
-    public void setCurrentTick(int tick){
-        currentTick = tick;
+    public Pose getPose(int time){
+        return PoseList.get(time-1);
     }
 }
