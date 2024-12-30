@@ -33,31 +33,34 @@ public class Camera {
         this.statisticalFolder = statisticalFolder;
         this.lastDetectedObjects = null;
     }
-    public DetectedObjectsEvent Detect(int time) {
-        List<DetectedObject> l = null;
+    public List<DetectedObjectsEvent> Detect(int time) {
+        List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
             if (detectedObjects.getTime() + frequency <= time) {
-                l = detectedObjects.getDetectedObjects();
+                l.add(detectedObjects);
                 toRemove.add(detectedObjects);
             }
         }
         for(StampedDetectedObjects detectedObjects : toRemove) {
             this.detectedObjectList.remove(detectedObjects);
         }
-        if (l != null){
-            DetectedObjectsEvent dEvent=new DetectedObjectsEvent(l, time);
-            for(DetectedObject detectedObject : l){
-                if(detectedObject.getId().equals("ERROR")) {
-                    dEvent.setDetectedError(detectedObject.getDescription());
+        if (l.size() > 0){
+            List<DetectedObjectsEvent> events=new ArrayList<>();
+            for (StampedDetectedObjects detectedObjects : l) {
+                events.add(new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime()));
+                for(DetectedObject d : detectedObjects.getDetectedObjects()){
+                if(d.getId().equals("ERROR")) {
+                    events.get(events.size()-1).setDetectedError(d.getDescription());
                     this.status=STATUS.ERROR;
                 }
             }
+            }
             if(this.status!=STATUS.ERROR) {
-                lastDetectedObjects = l;
+                lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
                 statisticalFolder.increaseNumDetectedObjects(l.size());
             }
-            return dEvent;
+            return events;
         }
         return null;
     }

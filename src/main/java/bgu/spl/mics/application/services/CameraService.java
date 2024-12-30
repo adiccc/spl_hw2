@@ -44,12 +44,14 @@ public class CameraService extends MicroService {
     public void initialize() {//was protected changed for tests
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
             System.out.println("camera got tick *********");
-            DetectedObjectsEvent e = camera.Detect(t.getTime());
-            if (e != null) {
-                if(e.isDetectedError())
-                    sendBroadcast(new CrashedBroadcast(this,e.getDetectedError()));
-                else
-                    futures.put(e,sendEvent(e));
+            List<DetectedObjectsEvent> DetectedObjectsEvents = camera.Detect(t.getTime());
+            if (DetectedObjectsEvents != null) {
+                for(DetectedObjectsEvent detectedObjectsEvent : DetectedObjectsEvents) {
+                    if(detectedObjectsEvent.isDetectedError())
+                    sendBroadcast(new CrashedBroadcast(this,detectedObjectsEvent.getDetectedError()));
+                    else
+                        futures.put(detectedObjectsEvent,sendEvent(detectedObjectsEvent));
+                }
             }
             System.out.println("camera got tick");
         });
@@ -59,8 +61,8 @@ public class CameraService extends MicroService {
             terminate();
         });
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
-            if (TimeService.class.equals(c.getSender().getClass())) {
-                camera.status = STATUS.DOWN;
+            if (TimeService.class==c.getSender().getClass()) {
+                camera.status=STATUS.DOWN;
                 terminate();
             }
         });
