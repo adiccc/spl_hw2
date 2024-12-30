@@ -85,6 +85,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
         messageCallback.put(type, callback);
+        System.out.println("call back put by "+type);
         MessageBusImpl.getInstance().subscribeBroadcast(type,this);
     }
 
@@ -171,7 +172,8 @@ public abstract class MicroService implements Runnable {
                 System.out.println("calling from ->"+m.getClass()+" to -> "+this.getClass());
                 Callback c=null;
 //                    if(m!=null) {
-                        c = messageCallback.get(m);
+                        c = messageCallback.get(m.getClass());
+                        System.out.println("calling callback -> "+c);
                         if (c!=null)
                             c.call(m);
 //                    }
