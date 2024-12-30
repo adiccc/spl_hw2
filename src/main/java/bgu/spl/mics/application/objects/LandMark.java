@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +21,22 @@ public class LandMark {
     public String getId() {
         return Id;
     }
+    public List<CloudPoint> getCoordinates() {
+        return Coordinates;
+    }
     public String getDescription() {
         return Description;
     }
-    public void addPoint(CloudPoint point) {
-            Coordinates.add(point);
+    public void UpdatePoints(List<CloudPoint> point) {
+        List<CloudPoint> newCoordinates = new ArrayList<CloudPoint>();
+        for(int i=0;i<point.size();i++) {
+            if(Coordinates.size()>i)
+                newCoordinates.add(new CloudPoint((point.get(i).getX()+Coordinates.get(i).getX())/2,(point.get(i).getY()+Coordinates.get(i).getY())/2));
+            else{
+                newCoordinates.add(point.get(i));
+            }
+            }
+        Coordinates=newCoordinates;
     }
 
     public String toString(){

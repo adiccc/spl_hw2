@@ -28,4 +28,7 @@ public class CloudPoint {
     public double getDistance() {
         return (double) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
+    public boolean equals(CloudPoint point) {
+        return (this.x == point.x) && (this.y == point.y);
+    }
 }
