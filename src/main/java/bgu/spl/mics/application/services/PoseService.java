@@ -31,7 +31,13 @@ public class PoseService extends MicroService {
      */
     @Override
     public void initialize() {//was protected changed for tests
-        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> sendEvent(new PoseEvent(gpsimu.getPose(t.getTime()))));
+        subscribeBroadcast(TickBroadcast.class,(TickBroadcast t) -> {
+            PoseEvent p=new PoseEvent(gpsimu.getPose(t.getTime()));
+            if(p!=null)
+                sendEvent(p);
+            else
+                this.terminate();
+        });
         subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast t) -> terminate());
         subscribeBroadcast(TerminatedBroadcast.class,(TerminatedBroadcast t) -> {
             if(t.getSender().getClass()==(TimeService.class)) {

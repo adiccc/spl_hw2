@@ -35,7 +35,6 @@ public class LiDarDataBase {
         return LidarHolder.instance;
     }
 
-
     private LiDarDataBase(String filePath){
         if(filePath.length()>0)
             initLidarData(filePath);
