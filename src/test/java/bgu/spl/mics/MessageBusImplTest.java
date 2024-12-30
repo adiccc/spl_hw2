@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MessageBusImplTest {
@@ -37,6 +39,7 @@ class MessageBusImplTest {
         gpsimu = new GPSIMU("example_input\\pose_data.json");
         poseService = new PoseService(gpsimu);
         fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder,"example_input"));
+        MessageBusImpl.latch=new CountDownLatch(5);
         cameraService.initialize();
         liDarService.initialize();
         timeService.initialize();
@@ -84,9 +87,10 @@ class MessageBusImplTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void sendEvent() {
         try {
+            detectedObjectsFuture = messageBus.sendEvent(detectedObjectsEvent);
             Message m = messageBus.awaitMessage(liDarService);
             assertNotNull(m, "liDarService didn't receive the detected objects event");
         } catch (InterruptedException e) {
@@ -95,7 +99,7 @@ class MessageBusImplTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void complete() {
         messageBus.complete(detectedObjectsEvent,true);
         assertTrue(detectedObjectsFuture.get(), "future of detetctedObjectEvent didnt resolved");
@@ -122,4 +126,14 @@ class MessageBusImplTest {
         assertTrue(!messageBus.isMicroServiceRegistered(poseService), "poseService didn't unregister to MessageBus");
         assertTrue(!messageBus.isMicroServiceRegistered(timeService), "timeService didn't unregister to MessageBus");
     }
+     @Test
+     @Order(5)
+    void awaitMessage() {
+        try {
+            Message m = messageBus.awaitMessage(liDarService);
+            assertNotNull(m, "liDarService didn't receive the detected objects event");
+        } catch (InterruptedException e) {
+            fail("Exception occurred while awaiting message for liDarService");
+        }
+		}
 }
