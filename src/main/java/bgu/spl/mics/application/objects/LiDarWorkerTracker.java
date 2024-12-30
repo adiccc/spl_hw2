@@ -22,7 +22,7 @@ public class LiDarWorkerTracker {
     private String filePath;
     private StatisticalFolder statisticalFolder;
 
-    public LiDarWorkerTracker( int id,  int frequency, STATUS status, String filePath, StatisticalFolder statisticalFolder ) {
+    public LiDarWorkerTracker(int id,  int frequency, STATUS status, String filePath, StatisticalFolder statisticalFolder ) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
@@ -33,14 +33,14 @@ public class LiDarWorkerTracker {
     }
     public TrackedObjectsEvent fetchData(TickBroadcast t){
         for(DetectedObjectsEvent e: detectedEvents){
-                if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){
+                if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){//fix? maybe not by detectedobject
                     detectedEvents.remove(e);
                     return sendTrackedEvent(e,t.getTime());//check again
                 }
             }
         return null;
     }
-    public TrackedObjectsEvent sendTrackedEvent(DetectedObjectsEvent e,int time){
+    public TrackedObjectsEvent sendTrackedEvent(DetectedObjectsEvent e,int time){//fix with lastTrackedObjects
         StampedDetectedObjects dec=e.getStampedDetectedObjects();
         lastTrackedObjects=new ArrayList<>();
         for(DetectedObject d:dec.getDetectedObjects()){

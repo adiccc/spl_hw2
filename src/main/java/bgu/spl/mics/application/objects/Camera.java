@@ -37,6 +37,7 @@ public class Camera {
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
             if (detectedObjects.getTime() + frequency <= time) {
                 l = detectedObjects.getDetectedObjects();
+                detectedObjectList.remove(detectedObjects);
             }
         }
         if (l != null){
