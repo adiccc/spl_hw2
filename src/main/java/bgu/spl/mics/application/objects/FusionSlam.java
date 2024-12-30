@@ -28,11 +28,15 @@ public class FusionSlam {
     //TODO use statisticalFolder.increaseNumLandmarks before we add a new landmark to the map
     // Singleton instance holder
     private static class FusionSlamHolder {
-        private static FusionSlam instance;
+        private static FusionSlam instance=new FusionSlam(null,"");
 
         private static void init(StatisticalFolder statisticalFolder, String outputPath) {
             instance = new FusionSlam(statisticalFolder, outputPath);
         }
+    }
+
+    public void initInstance(StatisticalFolder statisticalFolder, String outputPath) {
+        FusionSlamHolder.init(statisticalFolder, outputPath);
     }
 
     public synchronized static void addNumberOfSensors() {
@@ -58,14 +62,7 @@ public class FusionSlam {
         this.outputPath = outputPath;
     }
 
-    public static FusionSlam getInstance(StatisticalFolder statisticalFolder, String outputPath) {
-        if (FusionSlamHolder.instance == null) {
-            synchronized (FusionSlamHolder.class) {
-                if (FusionSlamHolder.instance == null) {
-                    FusionSlamHolder.init(statisticalFolder, outputPath);
-                }
-            }
-        }
+    public static FusionSlam getInstance() {
         return FusionSlamHolder.instance;
     }
 
