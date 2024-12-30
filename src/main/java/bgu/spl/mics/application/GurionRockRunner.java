@@ -45,8 +45,8 @@ public class GurionRockRunner {
             PoseService poseService=null;
 //            String configurationPath=args[0];
             String configurationPath="./example_input/configuration_file.json";
-            String outputPath=configurationPath.substring(0,configurationPath.length()-23);
-            FusionSlam.getInstance().initInstance(statisticalFolder,outputPath);
+            String folderPath=configurationPath.substring(0,configurationPath.length()-23);
+            FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
             JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input/configuration_file.json");
@@ -58,13 +58,13 @@ public class GurionRockRunner {
                 switch (key) {
                     case "Cameras":
                         System.out.println("Cameras");
-                        cameras=handleCameras(element.getAsJsonObject(),statisticalFolder);
+                        cameras=handleCameras(element.getAsJsonObject(),statisticalFolder,folderPath);
                         camerasServices=handelCamerasService(cameras);
                         break;
 
                     case "LidarWorkers":
                         System.out.println("LidarWorkers");
-                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder);
+                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder,folderPath);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
@@ -90,6 +90,7 @@ public class GurionRockRunner {
             }
             timeService=new TimeService(tickTime,duration,statisticalFolder);
             System.out.println("Gurion Rock Runner start threads");
+
 //            Start the simulation.
             List<Thread> allThreads=new LinkedList<>();
             if(poseService!=null)
@@ -100,6 +101,7 @@ public class GurionRockRunner {
                 allThreads.add(new Thread(l));
             allThreads.add(new Thread(fusionSlamService));
             allThreads.add(new Thread(timeService));
+            FusionSlam.getInstance().setNumberOfSensors(allThreads.size()-2);
             MessageBusImpl.latch=new CountDownLatch(allThreads.size());
             for (Thread t : allThreads) {
                 t.start();
@@ -119,14 +121,14 @@ public class GurionRockRunner {
         return liDarServices;
     }
 
-    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject,StatisticalFolder statisticalFolder) {
+    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject,StatisticalFolder statisticalFolder,String folderPath) {
         List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
         int index=1;
         // Extract the CamerasConfigurations array
         JsonArray workersConfig = jsonObject.getAsJsonArray("LidarConfigurations");
 
         // Get the lidar database file path
-        String filePath=jsonObject.get("lidars_data_path").getAsString();
+        String filePath=folderPath+jsonObject.get("lidars_data_path").getAsString().substring(1);
         LiDarDataBase.getInstance(filePath).setPath(filePath);
 
         // Iterate through the cameras configurations
@@ -155,14 +157,14 @@ public class GurionRockRunner {
         return camerasServices;
     }
 
-    private static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder) {
+    private static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder,String folderPath) {
         List<Camera> cameras = new ArrayList<>();
 
         // Extract the CamerasConfigurations array
         JsonArray camerasConfig = jsonObject.getAsJsonArray("CamerasConfigurations");
 
         // Get the camera data file path
-        String cameraDataPath = jsonObject.get("camera_datas_path").getAsString();
+        String cameraDataPath = folderPath+jsonObject.get("camera_datas_path").getAsString().substring(1);
 
         // Iterate through the cameras configurations
         for (JsonElement cameraElement : camerasConfig) {

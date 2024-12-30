@@ -49,25 +49,20 @@ public class LiDarService extends MicroService {
             if(e.isDetectedError())
                 sendBroadcast(new CrashedBroadcast(this,"Sensor Lidar disconnected"));
             else
-                futures.put(e,MessageBusImpl.getInstance().sendEvent(e));
+                futures.put(e,sendEvent(e));
         }
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
-            if (workerTracker != null) {
-                workerTracker.status = STATUS.DOWN;
-            }
+            workerTracker.status = STATUS.DOWN;
             terminate();
         });
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
-            if(workerTracker!=null){
-                workerTracker.status=STATUS.DOWN;
-            }
             if (TimeService.class==c.getSender().getClass()) {
+                workerTracker.status=STATUS.DOWN;
                 terminate();
             }
         });
         subscribeEvent(DetectedObjectsEvent.class,(DetectedObjectsEvent t) -> workerTracker.processDetectedObjects(t));
-        FusionSlam.addNumberOfSensors();
     }
 
     public List<TrackedObject> getLastTrackedObjects(){

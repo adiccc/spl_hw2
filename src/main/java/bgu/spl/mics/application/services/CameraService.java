@@ -54,21 +54,16 @@ public class CameraService extends MicroService {
             System.out.println("camera got tick");
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
-            if (camera != null) {
-                camera.status = STATUS.DOWN;
-            }
+            camera.status = STATUS.DOWN;
             System.out.println("camera going down - terminated, something got terminated");
             terminate();
         });
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {
-            if (TimeService.class==c.getSender().getClass()) {
-                if (camera != null) {
-                    camera.status = STATUS.DOWN;
-                }
+            if (TimeService.class.equals(c.getSender().getClass())) {
+                camera.status = STATUS.DOWN;
                 terminate();
             }
         });
-        FusionSlam.addNumberOfSensors();
             }
         public List<DetectedObject> getLastDetectedObjects(){
             return camera.getLastDetectedObjects();

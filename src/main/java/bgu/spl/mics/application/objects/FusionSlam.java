@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Manages the fusion of sensor data for simultaneous localization and mapping (SLAM).
@@ -23,7 +24,7 @@ public class FusionSlam {
     private ConcurrentHashMap<Integer, StampedDetectedObjects> maps;
     private StatisticalFolder statisticalFolder;
     private String outputPath;
-    public static int NumberOfSensors;
+    public AtomicInteger NumberOfSensors;
 
     //TODO use statisticalFolder.increaseNumLandmarks before we add a new landmark to the map
     // Singleton instance holder
@@ -39,18 +40,21 @@ public class FusionSlam {
         FusionSlamHolder.init(statisticalFolder, outputPath);
     }
 
-    public synchronized static void addNumberOfSensors() {
-        FusionSlam.NumberOfSensors = FusionSlam.NumberOfSensors + 1;
-        System.out.println("@numSensors "+FusionSlam.NumberOfSensors);
+    public void decreaseNumberOfSensors() {
+        NumberOfSensors.decrementAndGet();
+        System.out.println("@numSensors "+NumberOfSensors);
     }
 
-    public synchronized static void decreaseNumberOfSensors() {
-        FusionSlam.NumberOfSensors= FusionSlam.NumberOfSensors -1;
-        System.out.println("@numSensors "+FusionSlam.NumberOfSensors);
+    public void setNumberOfSensors(int numberOfSensors) {
+        NumberOfSensors.set(numberOfSensors);
     }
 
-    public synchronized static int getNumberOfSensors() {
-        return FusionSlam.NumberOfSensors;
+    public boolean isLeftSensorOn() {
+        return NumberOfSensors.intValue()>0;
+    }
+
+    public AtomicInteger getNumberOfSensors() {
+        return NumberOfSensors;
     }
 
     private FusionSlam(StatisticalFolder statisticalFolder, String outputPath) {
@@ -60,6 +64,7 @@ public class FusionSlam {
         maps = new ConcurrentHashMap<>();
         this.statisticalFolder = statisticalFolder;
         this.outputPath = outputPath;
+        this.NumberOfSensors = new AtomicInteger(0);
     }
 
     public static FusionSlam getInstance() {
