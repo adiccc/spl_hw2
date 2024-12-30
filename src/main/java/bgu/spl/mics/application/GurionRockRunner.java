@@ -126,6 +126,7 @@ public class GurionRockRunner {
 
         // Get the lidar database file path
         String filePath=jsonObject.get("lidars_data_path").getAsString();
+        LiDarDataBase.getInstance(filePath).setPath(filePath);
 
         // Iterate through the cameras configurations
         for (JsonElement lidarElement : workersConfig) {
