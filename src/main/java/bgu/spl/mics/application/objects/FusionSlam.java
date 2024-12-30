@@ -37,10 +37,12 @@ public class FusionSlam {
 
     public synchronized static void addNumberOfSensors() {
         FusionSlam.NumberOfSensors = FusionSlam.NumberOfSensors + 1;
+        System.out.println("@numSensors "+FusionSlam.NumberOfSensors);
     }
 
     public synchronized static void decreaseNumberOfSensors() {
-        FusionSlam.NumberOfSensors--;
+        FusionSlam.NumberOfSensors= FusionSlam.NumberOfSensors -1;
+        System.out.println("@numSensors "+FusionSlam.NumberOfSensors);
     }
 
     public synchronized static int getNumberOfSensors() {
@@ -127,9 +129,9 @@ public class FusionSlam {
         String result;
         if(errorReport!=null){
             String jsonReport = gson.toJson(errorReport);
-            result ="{"+jsonFolder+","+jsonLand+","+jsonReport+"}";
+            result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+",\"ErrorReprot\":"+jsonReport+"}";
         } else
-                result="{"+jsonFolder+","+jsonLand+"}";
+            result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+"}";
         FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
     }
 

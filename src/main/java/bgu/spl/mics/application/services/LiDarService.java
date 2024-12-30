@@ -7,6 +7,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.*;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -61,7 +62,7 @@ public class LiDarService extends MicroService {
             if(workerTracker!=null){
                 workerTracker.status=STATUS.DOWN;
             }
-            if ("timer".equals(c.getSender().getName())) {
+            if (TimeService.class==c.getSender().getClass()) {
                 terminate();
             }
         });

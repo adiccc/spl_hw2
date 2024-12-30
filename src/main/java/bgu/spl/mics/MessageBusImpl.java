@@ -132,7 +132,7 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
 			if(t!=null) {
-				System.out.println("Waiting for message, Q size : "+t.size());
+				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
 				return t.take();
 			}
 			return null;

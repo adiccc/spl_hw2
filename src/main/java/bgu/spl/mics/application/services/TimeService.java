@@ -52,7 +52,7 @@ public class TimeService extends MicroService {
 
             System.out.println("---time tick "+Ticks);
         }
-        MessageBusImpl.getInstance().sendBroadcast(new TerminatedBroadcast(this));
+        this.terminate();
     }
 
 }
