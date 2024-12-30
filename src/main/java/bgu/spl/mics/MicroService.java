@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -139,6 +141,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
+        MessageBusImpl.getInstance().sendBroadcast(new TerminatedBroadcast(this));
         this.terminated=true;
     }
 

@@ -49,15 +49,16 @@ public class FusionSlamService extends MicroService {
            handelTermination(c.getSender());
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
-            handelTermination(c.getSender());
             this.errorReport.setError(c.getErrorMessage());
             this.errorReport.setFualtySensor(c.getSender().getName());
+            handelTermination(c.getSender());
         });
     }
 
     public void handelTermination(MicroService c){
-        System.out.println("TerminatedBroadcast fusion");
-        if ("cameraService".equals(c.getName())||"LiDarService".equals(c.getName())) {
+        System.out.println("#-# hander terminated broadcast from "+c.getClass()+" , sensors left: "+FusionSlam.getNumberOfSensors());
+        if (c.getClass().equals(CameraService.class)||c.getClass().equals(LiDarService.class)) {
+            System.out.println("#-# fustion got terminate form camer or lidar");
             if(c.getClass().equals(LiDarService.class)) {
                 ((LiDarService)(c)).getLastTrackedObjects();
             }
@@ -66,8 +67,9 @@ public class FusionSlamService extends MicroService {
             FusionSlam.decreaseNumberOfSensors();
         }
         if (FusionSlam.getNumberOfSensors() == 0) {
+            System.out.println("## No sensors found starting report writing to file");
             this.errorReport.setPoses(fusionSlam.getPoses());
-            if(this.errorReport.getError().equals("noError"))
+            if(this.errorReport.getError().equals("noErrorDetected"))
                 fusionSlam.createOutputFile(null);
             else
                 fusionSlam.createOutputFile(errorReport);

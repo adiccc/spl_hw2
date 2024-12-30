@@ -47,7 +47,7 @@ public class TimeService extends MicroService {
 
             System.out.println("---time tick "+Ticks);
         }
-        sendBroadcast(new TerminatedBroadcast(this));
+        this.terminate();
     }
 
 }
