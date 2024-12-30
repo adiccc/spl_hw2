@@ -36,6 +36,7 @@ public class LandMark {
                 newCoordinates.add(point.get(i));
             }
             }
+        Coordinates=newCoordinates;
     }
 
     public String toString(){
