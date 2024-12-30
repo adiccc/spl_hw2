@@ -36,11 +36,6 @@ public class TimeService extends MicroService {
     @Override
     public void initialize() {
         MessageBusImpl.latch.countDown();
-        try {
-            MessageBusImpl.latch.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         //was protected changed for tests
         while (Ticks < Duration) {
             Ticks++;
