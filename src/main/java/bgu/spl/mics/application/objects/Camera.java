@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.Parser;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
 
 import bgu.spl.mics.FileHandelUtil;
@@ -57,25 +58,9 @@ public class Camera {
         return null;
     }
         private void initDetectedObjects (String path){
-            Gson gson = new Gson();
-            detectedObjectList = new ArrayList<>();
             JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
-            // Check if the camera exists in the JSON object
-            if (o.has(name)) {
-                JsonArray cameraData = o.getAsJsonArray(name);
-                // Iterate over the array of camera data
-                for (int i = 0; i < cameraData.size(); i++) {
-                    JsonObject cameraEntry = cameraData.get(i).getAsJsonObject();
-                    int time = cameraEntry.get("time").getAsInt();
-                    // Get the detected objects and parse them into DetectedObject list
-                    Type objectListType = new TypeToken<List<DetectedObject>>() {}.getType();
-                    List<DetectedObject> detectedObjects = gson.fromJson(cameraEntry.getAsJsonArray("detectedObjects"), objectListType);
-                    // Create StampedDetectedObjects instance and add it to the list
-                    StampedDetectedObjects stampedDetectedObjects = new StampedDetectedObjects(time, detectedObjects);
-                    detectedObjectList.add(stampedDetectedObjects);
-                }
-            }
+            this.detectedObjectList= Parser.deserializeCameraData(name,o);
         }
         public List<DetectedObject> getLastDetectedObjects(){
             return lastDetectedObjects;
