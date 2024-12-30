@@ -38,7 +38,8 @@ class MessageBusImplTest {
         timeService = new TimeService(500, 10, statisticalFolder);
         gpsimu = new GPSIMU("example_input\\pose_data.json");
         poseService = new PoseService(gpsimu);
-        fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder,"example_input"));
+        FusionSlam.getInstance().initInstance(statisticalFolder,"example_input");
+        fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
         MessageBusImpl.latch=new CountDownLatch(5);
         cameraService.initialize();
         liDarService.initialize();
