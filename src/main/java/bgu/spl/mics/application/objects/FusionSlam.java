@@ -35,6 +35,10 @@ public class FusionSlam {
         }
     }
 
+    public void initInstance(StatisticalFolder statisticalFolder, String outputPath) {
+        FusionSlamHolder.init(statisticalFolder, outputPath);
+    }
+
     public synchronized static void addNumberOfSensors() {
         FusionSlam.NumberOfSensors = FusionSlam.NumberOfSensors + 1;
         System.out.println("@numSensors "+FusionSlam.NumberOfSensors);
@@ -58,7 +62,7 @@ public class FusionSlam {
         this.outputPath = outputPath;
     }
 
-    public static FusionSlam getInstance(StatisticalFolder statisticalFolder, String outputPath) {
+    public static FusionSlam getInstance() {
         return FusionSlamHolder.instance;
     }
 

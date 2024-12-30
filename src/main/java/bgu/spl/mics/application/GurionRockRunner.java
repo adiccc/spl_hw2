@@ -46,7 +46,8 @@ public class GurionRockRunner {
 //            String configurationPath=args[0];
             String configurationPath="./example_input/configuration_file.json";
             String outputPath=configurationPath.substring(0,configurationPath.length()-23);
-            FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance(statisticalFolder, outputPath));
+            FusionSlam.getInstance().initInstance(statisticalFolder,outputPath);
+            FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
             JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input/configuration_file.json");
             Set<String> keys = rootObject.keySet();
