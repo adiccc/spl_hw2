@@ -95,30 +95,38 @@ public class FusionSlam {
         }
     }
 
-    public void updateMap(TrackedObjectsEvent trackedObjectsEvent, PoseEvent poseEvent) {
+    public List<LandMark> updateMap(TrackedObjectsEvent trackedObjectsEvent, PoseEvent poseEvent) {//change from void for tests
         List<LandMark> newLandMarks = new ArrayList<>();
-        for (LandMark landMark : landMarks) {
-            for (TrackedObject trackedObject : trackedObjectsEvent.getTrackedObjects()) {
-                if (landMark.getId().equals(trackedObject.getId())) {
-                    landMark.addPoint(convertToChargingStation(trackedObject.getCoordinates(),poseEvent.getPose()));
-                } else {
-                    List<CloudPoint> n=new LinkedList<>();
-                    n.add(convertToChargingStation(trackedObject.getCoordinates(), poseEvent.getPose()));
-                    newLandMarks.add(new LandMark(trackedObject.getId(), trackedObject.getDescription(),n));
+        for(TrackedObject trackedObject : trackedObjectsEvent.getTrackedObjects()) {
+            boolean found = false;
+            for (LandMark landMark : landMarks) {
+                if (landMark.getId().equals(trackedObject.getId())){
+                    landMark.UpdatePoints(convertToChargingStation(trackedObject.getCoordinates(),poseEvent.getPose()));
+                    found = true;
                 }
+            }
+            if (!found) {
+                List<CloudPoint> newLandmarkCoorination =new LinkedList<>();
+                newLandmarkCoorination.addAll(convertToChargingStation(trackedObject.getCoordinates(), poseEvent.getPose()));
+                newLandMarks.add(new LandMark(trackedObject.getId(), trackedObject.getDescription(), newLandmarkCoorination));
             }
         }
         if (!newLandMarks.isEmpty()) {
             landMarks.addAll(newLandMarks);
+            return newLandMarks;
         }
+        return null;
     }
 
-    public CloudPoint convertToChargingStation(CloudPoint cloudPoint, Pose p) {
-        double newX,newY;
+    public List<CloudPoint> convertToChargingStation(List<CloudPoint> cloudPoints, Pose p) {
         double alpha=p.getYaw() * Math.PI / 180;
-            newX = Math.cos(alpha)*cloudPoint.getX() - Math.sin(alpha)*cloudPoint.getY() + p.getX();
-            newY = Math.sin(alpha)*cloudPoint.getY() - Math.cos(alpha)*cloudPoint.getX() + p.getY();
-        return new CloudPoint(newX,newY);
+        List<CloudPoint> chargingStationCo = new LinkedList<>();
+        for(CloudPoint c: cloudPoints) {
+         double newX = Math.cos(alpha)*c.getX() - Math.sin(alpha)*c.getY() + p.getX();
+         double newY = Math.sin(alpha)*c.getY() - Math.cos(alpha)*c.getX() + p.getY();
+         chargingStationCo.add(new CloudPoint(newX, newY));
+        }
+        return chargingStationCo;
     }
 
     public void createOutputFile(ErrorReport errorReport){

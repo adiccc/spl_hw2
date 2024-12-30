@@ -28,12 +28,7 @@ public class TrackedObject {
     public String getDescription() {
         return description;
     }
-    public CloudPoint getCoordinates() {
-        double x=0,y=0;
-        for (CloudPoint point : coordinates) {
-            x=(x+point.getX())/2;
-            y=(y+point.getY())/2;
-        }
-        return new CloudPoint(x,y);
+    public List<CloudPoint> getCoordinates() {
+        return coordinates;
     }
 }
