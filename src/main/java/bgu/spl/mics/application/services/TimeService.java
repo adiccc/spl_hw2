@@ -49,5 +49,4 @@ public class TimeService extends MicroService {
         }
         this.terminate();
     }
-
 }
