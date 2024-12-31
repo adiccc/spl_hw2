@@ -144,19 +144,13 @@ public class FusionSlam {
             result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+"}";
         FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
     }
-
-//    public String toStringMap(){
-//        StringBuilder result = new StringBuilder("\"landMarks\":{");
-//        for (LandMark landMark : landMarks) {
-//            result.append(landMark.toString()).append(",");
-//        }
-//
-//        if (result.length() > 0 && result.charAt(result.length() - 1) == ',') {
-//            result.setLength(result.length() - 1);
-//        }
-//        result.append("}");
-//        return result.toString();
-//    }
+    public void finish(ErrorReport errorReport){
+        errorReport.setPoses(poses);
+        if(errorReport.getError().equals("noErrorDetected"))
+            createOutputFile(null);
+        else
+            createOutputFile(errorReport);
+    }
 
     public List<PoseEvent> getPoses(){
         return poses;
