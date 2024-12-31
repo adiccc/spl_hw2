@@ -125,7 +125,7 @@ public class FusionSlam {
         List<CloudPoint> chargingStationCo = new LinkedList<>();
         for(CloudPoint c: cloudPoints) {
              double newX = Math.cos(alpha)*c.getX() - Math.sin(alpha)*c.getY() + p.getX();
-             double newY = Math.sin(alpha)*c.getX() - Math.cos(alpha)*c.getY() + p.getY();
+             double newY = Math.sin(alpha)*c.getX() + Math.cos(alpha)*c.getY() + p.getY();
              chargingStationCo.add(new CloudPoint(newX, newY));
         }
         return chargingStationCo;
