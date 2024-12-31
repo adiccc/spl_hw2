@@ -148,7 +148,7 @@ public class GurionRockRunner {
         return liDarWorkerTrackers;
     }
 
-    private static List<CameraService> handelCamerasService(List<Camera> cameras) {
+    public static List<CameraService> handelCamerasService(List<Camera> cameras) {
         List<CameraService> camerasServices = new ArrayList<>();
         int index=1;
         for (Camera camera : cameras) {
@@ -158,7 +158,7 @@ public class GurionRockRunner {
         return camerasServices;
     }
 
-    private static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder,String folderPath) {
+    public static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder,String folderPath) {
         List<Camera> cameras = new ArrayList<>();
 
         // Extract the CamerasConfigurations array
