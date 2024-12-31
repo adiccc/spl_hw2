@@ -31,7 +31,7 @@ public class FusionSlamService extends MicroService {
     public FusionSlamService(FusionSlam fusionSlam) {
         super("fusion_slam");
         this.fusionSlam = fusionSlam;
-        this.errorReport=new ErrorReport("noErrorDetected","",new ArrayList<>(),new ArrayList<>(),null);
+        this.errorReport=new ErrorReport("noErrorDetected","");
     }
 
 
@@ -60,10 +60,10 @@ public class FusionSlamService extends MicroService {
         if (!c.getClass().equals(TimeService.class)) {
             System.out.println("#-# fustion got terminate form camera or lidar");
             if(c.getClass().equals(LiDarService.class)) {
-                errorReport.addTrackedObject(((LiDarService)(c)).getLastTrackedObjects());
+                errorReport.addTrackedObject(c.getName(),((LiDarService)(c)).getLastTrackedObjects());
             }
             else if(c.getClass().equals(CameraService.class)) {
-//                errorReport.addDetectedObject(((CameraService) (c)).getLastDetectedObjects());
+                errorReport.addDetectedObject(c.getName(),((CameraService) (c)).getLastDetectedObjects());
             }
             fusionSlam.decreaseNumberOfSensors();
         }
