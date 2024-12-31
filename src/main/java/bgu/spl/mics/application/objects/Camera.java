@@ -37,29 +37,33 @@ public class Camera {
         List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
         System.out.println("********");
-        for (StampedDetectedObjects detectedObjects : detectedObjectList) {
+        for (StampedDetectedObjects detectedObjects : detectedObjectList) {//adds the new detected object
             if (detectedObjects.getTime() + frequency <= time) {
                 l.add(detectedObjects);
                 toRemove.add(detectedObjects);
             }
         }
-        for(StampedDetectedObjects detectedObjects : toRemove) {
+        for(StampedDetectedObjects detectedObjects : toRemove) {//removes the send detected objects
             this.detectedObjectList.remove(detectedObjects);
         }
         if (l.size() > 0){
             List<DetectedObjectsEvent> events=new ArrayList<>();
             for (StampedDetectedObjects detectedObjects : l) {
                 events.add(new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime()));
-                for(DetectedObject d : detectedObjects.getDetectedObjects()){
-                    if(d.getId().equals("ERROR")) {
-                        events.get(events.size()-1).setDetectedError(d.getDescription());
+                for(int i=0;i<detectedObjects.getDetectedObjects().size();i++){
+                    if(detectedObjects.getDetectedObjects().get(i).getId().equals("ERROR")) {
+                        events.get(i).setDetectedError(detectedObjects.getDetectedObjects().get(i).getDescription());
                         this.status=STATUS.ERROR;
                     }
                 }
             }
             if(this.status!=STATUS.ERROR) {
                 lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
-                statisticalFolder.increaseNumDetectedObjects(l.size());
+                int sumDetectedObjects=0;
+                for (StampedDetectedObjects detectedObjects : l) {
+                    sumDetectedObjects+=detectedObjects.getDetectedObjects().size();
+                }
+                statisticalFolder.increaseNumDetectedObjects(sumDetectedObjects);
             }
             return events;
         }
