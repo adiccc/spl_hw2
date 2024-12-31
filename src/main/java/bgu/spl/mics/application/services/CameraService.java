@@ -57,6 +57,8 @@ public class CameraService extends MicroService {
                     }
                 }
             }
+            if(!camera.isLeftData())
+                this.terminate();
             System.out.println("camera got tick");
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
