@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.StatisticalFolder;
@@ -25,7 +26,7 @@ public class TimeService extends MicroService {
         super("timer");
         this.TickTime = TickTime;
         this.Duration = Duration;
-        this.Ticks = 0;
+        this.Ticks = 1;
         this.statFolder = statFolder;
     }
 
@@ -34,20 +35,25 @@ public class TimeService extends MicroService {
      * Starts broadcasting TickBroadcast messages and terminates after the specified duration.
      */
     @Override
-    public void initialize() {
+    public void initialize() { //was protected changed for tests
+        subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast broadcast) -> {
+            this.terminate();
+        });
+        subscribeBroadcast(TickBroadcast.class, (TickBroadcast broadcast) -> {
+            if (broadcast.getTime() < Duration) {
+                sendBroadcast(new TickBroadcast(Ticks));
+                statFolder.setSystemRuntime(this.Ticks);
+                try {
+                    Thread.sleep(TickTime);
+                } catch (InterruptedException e) {
+                }
+                System.out.println("---time tick " + Ticks);
+            } else
+                this.terminate();
+            this.Ticks++;
+        });
         MessageBusImpl.latch.countDown();
-        //was protected changed for tests
-        while (Ticks < Duration) {
-            Ticks++;
-            sendBroadcast(new TickBroadcast(Ticks));
-            statFolder.setSystemRuntime(this.Ticks);
-            try {
-                Thread.sleep(TickTime);
-            } catch (InterruptedException e) {}
-
-            System.out.println("---time tick "+Ticks);
-        }
-        this.terminate();
+        sendBroadcast(new TickBroadcast(Ticks));
     }
 
 }
