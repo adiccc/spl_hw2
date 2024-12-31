@@ -52,7 +52,8 @@ class FusionSlamTest {
         cloudPointsApple.add(new CloudPoint(1.0000000000000002,1.9999999999999998));
         assertTrue(cloudPointsApple.get(0).equals(landMarkApple1.get(0).getCoordinates().get(0)));
         assertTrue(cloudPointsApple.get(1).equals(landMarkApple1.get(0).getCoordinates().get(1)));
-        List<LandMark> landMarkApple2 = fusionSlam.updateMap(trackedObjectsEventapple2,poseEventapple2);
+        fusionSlam.updateMap(trackedObjectsEventapple2,poseEventapple2);
+        List<LandMark> landMarkApple2 = fusionSlam.landMarkList();
         List<CloudPoint> cloudPointsApple2=new ArrayList<>();
         cloudPointsApple2.add(new CloudPoint(0.26247201319116514,0.34740850373006815));
         cloudPointsApple2.add(new CloudPoint(0.6792785792574937,0.6855196079827421));

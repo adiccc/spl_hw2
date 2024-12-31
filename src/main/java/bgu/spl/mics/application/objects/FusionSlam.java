@@ -85,15 +85,11 @@ public class FusionSlam {
     }
 
     public void updatePose(PoseEvent p) {
-        boolean found = false;
+            poses.add(p);
         for (TrackedObjectsEvent event : trackedObjectsevents) {
             if (p.getPose().getTime() == event.getTrackedObjects().get(0).getTime()) {
                 updateMap(event, p);
-                found = true;
             }
-        }
-        if (!found) {
-            poses.add(p);
         }
     }
 
@@ -104,7 +100,6 @@ public class FusionSlam {
             for (LandMark landMark : landMarks) {
                 if (landMark.getId().equals(trackedObject.getId())){
                     landMark.UpdatePoints(convertToChargingStation(trackedObject.getCoordinates(),poseEvent.getPose()));
-                    newLandMarks.add(landMark);
                     found = true;
                 }
             }
@@ -122,7 +117,9 @@ public class FusionSlam {
         }
         return null;
     }
-
+    public List<LandMark> landMarkList(){
+        return landMarks;
+    }
     public List<CloudPoint> convertToChargingStation(List<CloudPoint> cloudPoints, Pose p) {
         double alpha=p.getYaw() * Math.PI / 180;
         List<CloudPoint> chargingStationCo = new LinkedList<>();
