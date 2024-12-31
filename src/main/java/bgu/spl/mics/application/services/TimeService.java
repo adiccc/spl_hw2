@@ -37,9 +37,6 @@ public class TimeService extends MicroService {
      */
     @Override
     public void initialize() { //was protected changed for tests
-        subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast broadcast) -> {
-            this.terminate();
-        });
 
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast broadcast) -> {
             if(broadcast.getSender().getClass().equals(FusionSlamService.class))

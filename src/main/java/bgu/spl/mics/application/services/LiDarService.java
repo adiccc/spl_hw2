@@ -51,6 +51,8 @@ public class LiDarService extends MicroService {
             else
                 futures.put(e,sendEvent(e));
         }
+        if(!workerTracker.isLeftData(t.getTime()))
+            this.terminate();
         });
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast c) -> {
             workerTracker.status = STATUS.DOWN;

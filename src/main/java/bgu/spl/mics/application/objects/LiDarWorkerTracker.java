@@ -31,6 +31,10 @@ public class LiDarWorkerTracker {
         this.filePath = filePath;
         this.statisticalFolder = statisticalFolder;
     }
+
+    public boolean isLeftData(int time){
+        return LiDarDataBase.getInstance(filePath).isLeftData(time);
+    }
     public TrackedObjectsEvent fetchData(TickBroadcast t){
         for(DetectedObjectsEvent e: detectedEvents){
                 if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){

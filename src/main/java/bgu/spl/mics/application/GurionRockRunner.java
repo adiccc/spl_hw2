@@ -92,7 +92,7 @@ public class GurionRockRunner {
             timeService=new TimeService(tickTime,duration,statisticalFolder);
             System.out.println("Gurion Rock Runner start threads");
 
-//            Start the simulation.
+            //Start the simulation.
             List<Thread> allThreads=new LinkedList<>();
             if(poseService!=null)
                 allThreads.add(new Thread(poseService));

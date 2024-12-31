@@ -145,11 +145,11 @@ public class FusionSlam {
         FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
     }
     public void finish(ErrorReport errorReport){
-        errorReport.setPoses(poses);
         if(errorReport.getError().equals("noErrorDetected"))
             createOutputFile(null);
-        else
-            createOutputFile(errorReport);
+        else{
+            errorReport.setPoses(poses);
+            createOutputFile(errorReport);}
     }
 
     public List<PoseEvent> getPoses(){

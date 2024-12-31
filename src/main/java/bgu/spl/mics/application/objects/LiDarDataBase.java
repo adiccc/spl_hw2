@@ -25,6 +25,10 @@ public class LiDarDataBase {
     public void setPath(String filePath){
         LidarHolder.setPath(filePath);
     }
+
+    public boolean isLeftData(int time){
+        return cloudPoints.get(cloudPoints.size()-1).getTime()>time;
+    }
     /**
      * Returns the singleton instance of LiDarDataBase.
      *
