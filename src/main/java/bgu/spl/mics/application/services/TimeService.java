@@ -19,11 +19,12 @@ public class TimeService extends MicroService {
     /**
      * Constructor for TimeService.
      *
-     * @param TickTime  The duration of each tick in milliseconds.
+     * @param TickTime  The duration of each tick in seconds.
      * @param Duration  The total number of ticks before the service terminates.
      */
     public TimeService(int TickTime, int Duration, StatisticalFolder statFolder) {
         super("timer");
+//        this.TickTime = TickTime*1000;
         this.TickTime = TickTime;
         this.Duration = Duration;
         this.Ticks = 1;
@@ -38,6 +39,11 @@ public class TimeService extends MicroService {
     public void initialize() { //was protected changed for tests
         subscribeBroadcast(CrashedBroadcast.class, (CrashedBroadcast broadcast) -> {
             this.terminate();
+        });
+
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast broadcast) -> {
+            if(broadcast.getSender().getClass().equals(FusionSlamService.class))
+                this.terminate();
         });
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast broadcast) -> {
             if (broadcast.getTime() < Duration) {

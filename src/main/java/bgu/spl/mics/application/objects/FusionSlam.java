@@ -125,7 +125,7 @@ public class FusionSlam {
         List<CloudPoint> chargingStationCo = new LinkedList<>();
         for(CloudPoint c: cloudPoints) {
              double newX = Math.cos(alpha)*c.getX() - Math.sin(alpha)*c.getY() + p.getX();
-             double newY = Math.sin(alpha)*c.getX() - Math.cos(alpha)*c.getY() + p.getY();
+             double newY = Math.sin(alpha)*c.getX() + Math.cos(alpha)*c.getY() + p.getY();
              chargingStationCo.add(new CloudPoint(newX, newY));
         }
         return chargingStationCo;
@@ -144,19 +144,13 @@ public class FusionSlam {
             result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+"}";
         FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
     }
-
-//    public String toStringMap(){
-//        StringBuilder result = new StringBuilder("\"landMarks\":{");
-//        for (LandMark landMark : landMarks) {
-//            result.append(landMark.toString()).append(",");
-//        }
-//
-//        if (result.length() > 0 && result.charAt(result.length() - 1) == ',') {
-//            result.setLength(result.length() - 1);
-//        }
-//        result.append("}");
-//        return result.toString();
-//    }
+    public void finish(ErrorReport errorReport){
+        errorReport.setPoses(poses);
+        if(errorReport.getError().equals("noErrorDetected"))
+            createOutputFile(null);
+        else
+            createOutputFile(errorReport);
+    }
 
     public List<PoseEvent> getPoses(){
         return poses;

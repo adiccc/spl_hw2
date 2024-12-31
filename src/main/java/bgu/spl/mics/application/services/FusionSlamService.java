@@ -69,11 +69,7 @@ public class FusionSlamService extends MicroService {
         }
         if (!fusionSlam.isLeftSensorOn()) {
             System.out.println("## No sensors found starting writing report to output file");
-            this.errorReport.setPoses(fusionSlam.getPoses());
-            if(this.errorReport.getError().equals("noErrorDetected"))
-                fusionSlam.createOutputFile(null);
-            else
-                fusionSlam.createOutputFile(errorReport);
+            fusionSlam.finish(errorReport);
             this.terminate();
         }
     }
