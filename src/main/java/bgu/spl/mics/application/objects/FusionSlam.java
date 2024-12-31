@@ -95,6 +95,8 @@ public class FusionSlam {
 
     public List<LandMark> updateMap(TrackedObjectsEvent trackedObjectsEvent, PoseEvent poseEvent) {//change from void for tests
         List<LandMark> newLandMarks = new ArrayList<>();
+        if(poseEvent.getPose().getTime()==20)
+            System.out.println("b");
         for(TrackedObject trackedObject : trackedObjectsEvent.getTrackedObjects()) {
             boolean found = false;
             for (LandMark landMark : landMarks) {

@@ -25,7 +25,7 @@ public class GPSIMU {
     }
 
     public Pose getPose(int time){
-        if (PoseList.get(PoseList.size() - 1).getTime()>time){
+        if (PoseList.get(PoseList.size() - 1).getTime()>=time){
             return PoseList.get(time-1);
         }
         return null;
