@@ -33,10 +33,14 @@ public class Camera {
         this.lastDetectedObjects = null;
         this.status=STATUS.UP;
     }
+
+    public boolean isLeftData(){
+        return (detectedObjectList.size()>0);
+    }
+
     public List<DetectedObjectsEvent> Detect(int time) {
         List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
-        System.out.println("********");
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {//adds the new detected object
             if (detectedObjects.getTime() + frequency <= time) {
                 l.add(detectedObjects);
