@@ -7,13 +7,13 @@ import bgu.spl.mics.application.objects.StampedDetectedObjects;
 import java.util.List;
 
 public class DetectedObjectsEvent implements Event<Boolean> {
-    private StampedDetectedObjects s;
+    private StampedDetectedObjects StampedDetectedObjects;
     private boolean detectedError;
     private String errorMessage;
 
 
     public DetectedObjectsEvent(List<DetectedObject> detectedObjects, int time){
-        s=new StampedDetectedObjects(time, detectedObjects);
+        StampedDetectedObjects=new StampedDetectedObjects(time, detectedObjects);
         detectedError=false;
         errorMessage="";
     }
@@ -29,9 +29,13 @@ public class DetectedObjectsEvent implements Event<Boolean> {
         return detectedError;
     }
 
+    public boolean equals(DetectedObjectsEvent d) {
+        boolean b=this.StampedDetectedObjects.equals(d.StampedDetectedObjects) && this.detectedError==d.detectedError && this.errorMessage.equals(d.errorMessage);
+        return this.StampedDetectedObjects.equals(d.StampedDetectedObjects) && this.detectedError==d.detectedError && this.errorMessage.equals(d.errorMessage);
+    }
 
     public StampedDetectedObjects getStampedDetectedObjects() {
-        return s;
+        return StampedDetectedObjects;
     }
 }
 

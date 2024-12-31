@@ -20,4 +20,16 @@ public class StampedDetectedObjects {
     public List<DetectedObject> getDetectedObjects() {
         return detectedObjects;
     }
+    public boolean equals(StampedDetectedObjects stampedDetectedObjects) {
+        if(this.time != stampedDetectedObjects.time)
+            return false;
+        if(this.detectedObjects.size()==stampedDetectedObjects.getDetectedObjects().size()){
+            for(int i=0;i<this.detectedObjects.size();i++){
+                if(!this.detectedObjects.get(i).equals(stampedDetectedObjects.getDetectedObjects().get(i))){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

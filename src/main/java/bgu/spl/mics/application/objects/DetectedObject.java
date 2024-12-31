@@ -20,4 +20,9 @@ public class DetectedObject {
     public String getDescription() {
         return description;
     }
+
+    public boolean equals(DetectedObject d) {
+        boolean b=id.equals(d.getId())&& description.equals(d.getDescription());
+        return id.equals(d.getId())&& description.equals(d.getDescription());
+    }
 }
