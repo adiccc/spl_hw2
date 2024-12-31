@@ -63,7 +63,7 @@ public class FusionSlamService extends MicroService {
                 errorReport.addTrackedObject(((LiDarService)(c)).getLastTrackedObjects());
             }
             else if(c.getClass().equals(CameraService.class)) {
-                errorReport.addDetectedObject(((CameraService) (c)).getLastDetectedObjects());
+//                errorReport.addDetectedObject(((CameraService) (c)).getLastDetectedObjects());
             }
             fusionSlam.decreaseNumberOfSensors();
         }
@@ -74,7 +74,7 @@ public class FusionSlamService extends MicroService {
                 fusionSlam.createOutputFile(null);
             else
                 fusionSlam.createOutputFile(errorReport);
-            terminate();
+            this.terminate();
         }
     }
 }

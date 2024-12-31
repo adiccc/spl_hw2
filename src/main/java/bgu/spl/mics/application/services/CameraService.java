@@ -48,9 +48,13 @@ public class CameraService extends MicroService {
             if (DetectedObjectsEvents != null) {
                 for(DetectedObjectsEvent detectedObjectsEvent : DetectedObjectsEvents) {
                     if(detectedObjectsEvent.isDetectedError())
-                    sendBroadcast(new CrashedBroadcast(this,detectedObjectsEvent.getDetectedError()));
-                    else
-                        futures.put(detectedObjectsEvent,sendEvent(detectedObjectsEvent));
+                        sendBroadcast(new CrashedBroadcast(this,detectedObjectsEvent.getDetectedError()));
+                    else {
+                        System.out.println("********* sending detected event *********");
+                        Future f = sendEvent(detectedObjectsEvent);
+                        System.out.println((f==null)+" if f null");
+                        futures.put(detectedObjectsEvent, f);
+                    }
                 }
             }
             System.out.println("camera got tick");

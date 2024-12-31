@@ -63,8 +63,8 @@ public class GurionRockRunner {
                         camerasServices=handelCamerasService(cameras);
                         break;
 
-                    case "LidarWorkers":
-                        System.out.println("LidarWorkers");
+                    case "LiDarWorkers":
+                        System.out.println("LiDarWorkers");
                         liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder,folderPath);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
@@ -139,10 +139,9 @@ public class GurionRockRunner {
             // Extract lidar properties
             int id = lidarObj.get("id").getAsInt();
             int frequency = lidarObj.get("frequency").getAsInt();
-            STATUS status = STATUS.DOWN;
 
             // Create a Camera object and add it to the list
-            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency, status,filePath,statisticalFolder);
+            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency,filePath,statisticalFolder);
             liDarWorkerTrackers.add(lidar);
         }
         return liDarWorkerTrackers;
@@ -174,10 +173,9 @@ public class GurionRockRunner {
             // Extract camera properties
             int id = cameraObj.get("id").getAsInt();
             int frequency = cameraObj.get("frequency").getAsInt();
-            STATUS status = STATUS.DOWN; // Example logic for status
 
             // Create a Camera object and add it to the list
-            Camera camera = new Camera(id, frequency, status, cameraDataPath,statisticalFolder);
+            Camera camera = new Camera(id, frequency, cameraDataPath,statisticalFolder);
             cameras.add(camera);
         }
         return cameras;

@@ -25,17 +25,19 @@ public class Camera {
     private List<DetectedObject> lastDetectedObjects;
     private StatisticalFolder statisticalFolder;
 
-    public Camera(int id, int frequency, STATUS status,String filePath, StatisticalFolder statisticalFolder) {
+    public Camera(int id, int frequency,String filePath, StatisticalFolder statisticalFolder) {
         this.id = id;
         this.frequency = frequency;
         this.status = status;
         initDetectedObjects(filePath);
         this.statisticalFolder = statisticalFolder;
         this.lastDetectedObjects = null;
+        this.status=STATUS.UP;
     }
     public List<DetectedObjectsEvent> Detect(int time) {
         List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
+        System.out.println("********");
         for (StampedDetectedObjects detectedObjects : detectedObjectList) {
             if (detectedObjects.getTime() + frequency <= time) {
                 l.add(detectedObjects);
@@ -50,11 +52,11 @@ public class Camera {
             for (StampedDetectedObjects detectedObjects : l) {
                 events.add(new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime()));
                 for(DetectedObject d : detectedObjects.getDetectedObjects()){
-                if(d.getId().equals("ERROR")) {
-                    events.get(events.size()-1).setDetectedError(d.getDescription());
-                    this.status=STATUS.ERROR;
+                    if(d.getId().equals("ERROR")) {
+                        events.get(events.size()-1).setDetectedError(d.getDescription());
+                        this.status=STATUS.ERROR;
+                    }
                 }
-            }
             }
             if(this.status!=STATUS.ERROR) {
                 lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();

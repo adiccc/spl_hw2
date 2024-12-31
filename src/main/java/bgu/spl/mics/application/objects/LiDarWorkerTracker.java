@@ -22,10 +22,10 @@ public class LiDarWorkerTracker {
     private String filePath;
     private StatisticalFolder statisticalFolder;
 
-    public LiDarWorkerTracker(int id,  int frequency, STATUS status, String filePath, StatisticalFolder statisticalFolder ) {
+    public LiDarWorkerTracker(int id,  int frequency, String filePath, StatisticalFolder statisticalFolder ) {
         this.id = id;
         this.frequency = frequency;
-        this.status = status;
+        this.status = STATUS.UP;
         this.lastTrackedObjects = new ArrayList<>();
         this.detectedEvents = new ArrayList<>();
         this.filePath = filePath;
