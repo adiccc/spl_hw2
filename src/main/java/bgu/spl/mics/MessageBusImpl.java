@@ -59,7 +59,6 @@ public class MessageBusImpl implements MessageBus {
 						if(microQueues.containsKey(t))
             				microQueues.get(t).add(b);
 						System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());
-
 						t.notifyAll();
 					}
 			}
