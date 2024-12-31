@@ -28,7 +28,6 @@ public class Camera {
     public Camera(int id, int frequency,String filePath, StatisticalFolder statisticalFolder) {
         this.id = id;
         this.frequency = frequency;
-        this.status = status;
         initDetectedObjects(filePath);
         this.statisticalFolder = statisticalFolder;
         this.lastDetectedObjects = null;

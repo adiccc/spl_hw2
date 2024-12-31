@@ -18,7 +18,7 @@ class CameraTest {
     @BeforeEach
     void setUp() {
         statisticalFolder = new StatisticalFolder();
-        camera=new Camera(1, 2, STATUS.UP, "example_input\\camera_data.json", statisticalFolder);
+        camera=new Camera(1, 2, "example_input\\camera_data.json", statisticalFolder);
         res1= new ArrayList<>();
         List<DetectedObject> detectedObjects1 = new ArrayList<>();
         detectedObjects1.add(new DetectedObject("Wall_1","Wall"));
