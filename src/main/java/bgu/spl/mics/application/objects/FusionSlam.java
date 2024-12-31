@@ -115,7 +115,9 @@ public class FusionSlam {
             }
         }
         if (!newLandMarks.isEmpty()) {
+            System.out.println("numLandMark "+newLandMarks.size());
             landMarks.addAll(newLandMarks);
+            statisticalFolder.increaseNumLandmarks(newLandMarks.size());
             return newLandMarks;
         }
         return null;

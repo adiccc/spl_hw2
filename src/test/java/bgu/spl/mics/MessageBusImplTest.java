@@ -33,8 +33,8 @@ class MessageBusImplTest {
     void setUp() {
         messageBus = MessageBusImpl.getInstance();
         statisticalFolder = new StatisticalFolder();
-        cameraService = new CameraService(new Camera(1, 2, STATUS.UP, "example_input\\camera_data.json", statisticalFolder));
-        liDarService = new LiDarService(new LiDarWorkerTracker(1, 2, STATUS.UP, "example_input\\lidar_data.json", statisticalFolder), 1);
+        cameraService = new CameraService(new Camera(1, 2, "example_input\\camera_data.json", statisticalFolder));
+        liDarService = new LiDarService(new LiDarWorkerTracker(1, 2, "example_input\\lidar_data.json", statisticalFolder), 1);
         timeService = new TimeService(500, 10, statisticalFolder);
         gpsimu = new GPSIMU("example_input\\pose_data.json");
         poseService = new PoseService(gpsimu);
