@@ -55,5 +55,4 @@ public class TimeService extends MicroService {
         MessageBusImpl.latch.countDown();
         sendBroadcast(new TickBroadcast(Ticks));
     }
-
 }
