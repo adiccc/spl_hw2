@@ -85,15 +85,11 @@ public class FusionSlam {
     }
 
     public void updatePose(PoseEvent p) {
-        boolean found = false;
+            poses.add(p);
         for (TrackedObjectsEvent event : trackedObjectsevents) {
             if (p.getPose().getTime() == event.getTrackedObjects().get(0).getTime()) {
                 updateMap(event, p);
-                found = true;
             }
-        }
-        if (!found) {
-            poses.add(p);
         }
     }
 
