@@ -59,7 +59,11 @@ public class Camera {
             }
             if(this.status!=STATUS.ERROR) {
                 lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
-                statisticalFolder.increaseNumDetectedObjects(l.size());
+                int sumDetectedObjects=0;
+                for (StampedDetectedObjects detectedObjects : l) {
+                    sumDetectedObjects+=detectedObjects.getDetectedObjects().size();
+                }
+                statisticalFolder.increaseNumDetectedObjects(sumDetectedObjects);
             }
             return events;
         }
