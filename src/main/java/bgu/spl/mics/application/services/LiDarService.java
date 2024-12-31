@@ -28,7 +28,7 @@ public class LiDarService extends MicroService {
      * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service will use to process data.
      */
     public LiDarService(LiDarWorkerTracker LiDarWorkerTracker, int id) {
-        super("LiDarService");
+        super("LiDar"+id);
         this.workerTracker = LiDarWorkerTracker;
         futures = new ConcurrentHashMap<>();
     }

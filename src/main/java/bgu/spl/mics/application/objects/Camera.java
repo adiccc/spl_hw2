@@ -38,6 +38,10 @@ public class Camera {
         return (detectedObjectList.size()>0);
     }
 
+    public int getId(){
+        return this.id;
+    }
+
     public List<DetectedObjectsEvent> Detect(int time) {
         List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
@@ -62,10 +66,12 @@ public class Camera {
                 }
             }
             if(this.status!=STATUS.ERROR) {
-                lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
+//                lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
                 int sumDetectedObjects=0;
+                lastDetectedObjects=new ArrayList<>();
                 for (StampedDetectedObjects detectedObjects : l) {
                     sumDetectedObjects+=detectedObjects.getDetectedObjects().size();
+                    lastDetectedObjects.addAll(detectedObjects.getDetectedObjects());
                 }
                 statisticalFolder.increaseNumDetectedObjects(sumDetectedObjects);
             }

@@ -27,7 +27,7 @@ public class LiDarDataBase {
     }
 
     public boolean isLeftData(int time){
-        return cloudPoints.get(cloudPoints.size()-1).getTime()>time;
+        return cloudPoints.get(cloudPoints.size()-1).getTime()>=time;
     }
     /**
      * Returns the singleton instance of LiDarDataBase.

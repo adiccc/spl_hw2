@@ -30,7 +30,7 @@ public class CameraService extends MicroService {
      * @param camera The Camera object that this service will use to detect objects.
      */
     public CameraService(Camera camera) {
-        super("cameraService");
+        super("camera"+camera.getId());
         this.camera = camera;
         futures = new ConcurrentHashMap<>();
     }
