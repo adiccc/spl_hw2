@@ -34,13 +34,13 @@ public class MessageBusImpl implements MessageBus {
 	}
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		System.out.println("subscribeEvent "+m.getClass());
+		System.out.println("New subscribe of "+m.getClass().getSimpleName()+" to the event: "+type.getSimpleName());
 		eventsMapping.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		System.out.println("subscribeBroadcast "+m.getClass());
+		System.out.println("New subscribe of "+m.getClass().getSimpleName()+"to the broadcast: "+type.getSimpleName());
 		broadcasts.computeIfAbsent(type, key -> new LinkedBlockingQueue<>()).add(m);
 	}
 
@@ -53,14 +53,14 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		System.out.println("sendBroadcast");
+		System.out.println("Sending broadcast of "+b.getClass().getSimpleName()+" to all registered services");
 		BlockingQueue<MicroService> queue = broadcasts.get(b.getClass());
 		if (queue != null) {
 			for (MicroService t : queue) {
 					synchronized (t){
 						if(microQueues.containsKey(t)){
             				microQueues.get(t).add(b);
-							System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());}
+						}
 						t.notifyAll();
 					}
 			}
@@ -71,7 +71,7 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		System.out.println("Sending event: " + e);
+		System.out.println("Sending event of " + e.getClass().getSimpleName()+" to all registered services");
 		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}
@@ -100,13 +100,13 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		System.out.println("Registering MicroService: " + m);
+		System.out.println("Registering MicroService: " + m.getClass().getSimpleName()+" to the messageBus");
 		microQueues.computeIfAbsent(m, key -> new LinkedBlockingQueue<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		System.out.println("Unregistering microservice "+m);
+		System.out.println("Unregistering microservice "+m.getClass().getSimpleName()+" from the messageBus");
 			synchronized (m) {
 				if(microQueues.containsKey(m)) {
 					microQueues.remove(m);
@@ -133,7 +133,6 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
 			if(t!=null) {
-				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
 				return t.take();
 			}
 			return null;
@@ -141,13 +140,16 @@ public class MessageBusImpl implements MessageBus {
 	public boolean stopTicks(){
 		for(MicroService m : microQueues.keySet()){
 			if(m.getName()=="timer"){
-				for(Message mes:microQueues.get(m)){
-					if(mes.getClass().equals(CrashedBroadcast.class)){
-						return true;
+				synchronized (microQueues.get(m)){
+					for(Message mes:microQueues.get(m)){
+						if(mes.getClass().equals(CrashedBroadcast.class)){
+							return true;
+						}
+						if(mes.getClass().equals(TerminatedBroadcast.class)&&((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam")){
+							return true;
+						}
 					}
-					if(mes.getClass().equals(TerminatedBroadcast.class)&&((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam")){
-						return true;
-					}
+					microQueues.get(m).notifyAll();
 				}
 			}
 		}

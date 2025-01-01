@@ -1,7 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.ErrorReport;
-import bgu.spl.mics.FileHandelUtil;
+import bgu.spl.mics.handllers.FileHandelUtil;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import com.google.gson.Gson;
@@ -42,7 +42,6 @@ public class FusionSlam {
 
     public void decreaseNumberOfSensors() {
         NumberOfSensors.decrementAndGet();
-        System.out.println("@numSensors "+NumberOfSensors);
     }
 
     public void setNumberOfSensors(int numberOfSensors) {
@@ -95,8 +94,6 @@ public class FusionSlam {
 
     public List<LandMark> updateMap(TrackedObjectsEvent trackedObjectsEvent, PoseEvent poseEvent) {//change from void for tests
         List<LandMark> newLandMarks = new ArrayList<>();
-        if(poseEvent.getPose().getTime()==20)
-            System.out.println("b");
         for(TrackedObject trackedObject : trackedObjectsEvent.getTrackedObjects()) {
             boolean found = false;
             for (LandMark landMark : landMarks) {
@@ -112,7 +109,6 @@ public class FusionSlam {
             }
         }
         if (!newLandMarks.isEmpty()) {
-            System.out.println("numLandMark "+newLandMarks.size());
             landMarks.addAll(newLandMarks);
             statisticalFolder.increaseNumLandmarks(newLandMarks.size());
             return newLandMarks;
@@ -157,6 +153,4 @@ public class FusionSlam {
     public List<PoseEvent> getPoses(){
         return poses;
     }
-
-
 }

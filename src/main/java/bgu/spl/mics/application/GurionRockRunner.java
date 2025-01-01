@@ -1,6 +1,6 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.FileHandelUtil;
+import bgu.spl.mics.handllers.FileHandelUtil;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
@@ -30,7 +30,6 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
     public static void main(String[] args) {
-        System.out.println("Hello World!");
 //        if(args.length>0){
         if(true){
             StatisticalFolder statisticalFolder = new StatisticalFolder();
@@ -44,13 +43,13 @@ public class GurionRockRunner {
             GPSIMU gpsimu;
             PoseService poseService=null;
 //            String configurationPath=args[0];
-            String configurationPath="./example_input_2/configuration_file.json";
+            String configurationPath="./example_input_3/configuration_file.json";
             String folderPath=configurationPath.substring(0,configurationPath.length()-23);
             //init fusion slam instance
             FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileReaderUtil.readJson(configurationPath);
-            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input_2/configuration_file.json");
+            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input_3/configuration_file.json");
             Set<String> keys = rootObject.keySet();
             int ThreadCounter=0;
             for (String key : keys) {
@@ -58,39 +57,33 @@ public class GurionRockRunner {
 
                 switch (key) {
                     case "Cameras":
-                        System.out.println("Cameras");
                         cameras=handleCameras(element.getAsJsonObject(),statisticalFolder,folderPath);
                         camerasServices=handelCamerasService(cameras);
                         break;
 
                     case "LiDarWorkers":
-                        System.out.println("LiDarWorkers");
                         liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder,folderPath);
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
                     case "poseJsonFile":
-                        System.out.println("poseJsonFile");
                         gpsimu=new GPSIMU(folderPath+element.getAsString().substring(1));
                         poseService=new PoseService(gpsimu);
                         break;
 
                     case "TickTime":
-                        System.out.println("TickTime");
                         tickTime=element.getAsInt();
                         break;
 
                     case "Duration":
-                        System.out.println("Duration");
                         duration=element.getAsInt();
                         break;
 
                     default:
-                        System.out.println("Unknown key: " + key);
+                        System.out.println("Recognise unknown key: " + key);
                 }
             }
             timeService=new TimeService(tickTime,duration,statisticalFolder);
-            System.out.println("Gurion Rock Runner start threads");
 
             //Start the simulation.
             List<Thread> allThreads=new LinkedList<>();
@@ -104,6 +97,9 @@ public class GurionRockRunner {
             allThreads.add(new Thread(timeService));
             FusionSlam.getInstance().setNumberOfSensors(allThreads.size()-2);
             MessageBusImpl.latch=new CountDownLatch(allThreads.size());
+            System.out.println("=========================================================================================");
+            System.out.println("=============================  Gurion Rock start cleaning  ==============================");
+            System.out.println("=========================================================================================");
             for (Thread t : allThreads) {
                 t.start();
             }

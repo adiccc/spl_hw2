@@ -43,18 +43,19 @@ public class TimeService extends MicroService {
                 this.terminate();
         });
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast broadcast) -> {
+            if(MessageBusImpl.getInstance().stopTicks()){
+                terminate();
+                return;
+            }
             if (broadcast.getTime() < Duration) {
-                if(MessageBusImpl.getInstance().stopTicks()){
-                    terminate();
-                    return;
-                }
                     sendBroadcast(new TickBroadcast(Ticks));
+
+                System.out.println("---time update : " + Ticks);
                 statFolder.setSystemRuntime(this.Ticks);
                 try {
                     Thread.sleep(TickTime);
                 } catch (InterruptedException e) {
                 }
-                System.out.println("---time tick " + Ticks);
             } else
                 this.terminate();
             this.Ticks++;

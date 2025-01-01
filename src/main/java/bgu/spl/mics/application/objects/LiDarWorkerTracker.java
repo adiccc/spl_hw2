@@ -53,23 +53,21 @@ public class LiDarWorkerTracker {
                 lastTrackedObjects.add(new TrackedObject(d.getId(),s.getTime(),d.getDescription(),s.getCloudPoints()));//convert to list<cloudpoints>
             }
         }
-        if(lastTrackedObjects.size()>0){
-            TrackedObjectsEvent tEvent= new TrackedObjectsEvent(lastTrackedObjects);
-            for(TrackedObject t:lastTrackedObjects){
-                if (t.getId().equals("ERROR")) {
-                    tEvent.setDetectedError(true);
-                    this.status=STATUS.ERROR;
-                    MessageBusImpl.getInstance().complete(e, false);
-                }
-            }
-            if(this.status!=STATUS.ERROR) {
-                statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
-                MessageBusImpl.getInstance().complete(e, true);
-            }
-            return tEvent;
+        TrackedObjectsEvent tEvent= new TrackedObjectsEvent(lastTrackedObjects);
+        if(lastTrackedObjects.size()!=dec.getDetectedObjects().size()){
+            MessageBusImpl.getInstance().complete(e, false);
+            tEvent.setDetectedError(true);
+            this.status=STATUS.ERROR;
         }
-        MessageBusImpl.getInstance().complete(e, false);
-        return null;
+        else if(lastTrackedObjects.size()>0){
+            statisticalFolder.increaseNumTrackedObjects(lastTrackedObjects.size());
+            MessageBusImpl.getInstance().complete(e, true);
+        }
+        else{
+            MessageBusImpl.getInstance().complete(e, false);
+            tEvent= null;
+        }
+        return tEvent;
     }
     public void processDetectedObjects(DetectedObjectsEvent e){//create tracked object event
         detectedEvents.add(e);

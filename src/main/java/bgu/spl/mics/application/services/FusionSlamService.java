@@ -56,9 +56,8 @@ public class FusionSlamService extends MicroService {
     }
 
     public void handelTermination(MicroService c){
-        System.out.println("#-# hander terminated broadcast from "+c.getClass()+" , sensors left: "+fusionSlam.getNumberOfSensors());
+        System.out.println("There are "+fusionSlam.getNumberOfSensors()+" active sensors left");
         if (!c.getClass().equals(TimeService.class)) {
-            System.out.println("#-# fustion got terminate form camera or lidar");
             if(c.getClass().equals(LiDarService.class)) {
                 errorReport.addTrackedObject(c.getName(),((LiDarService)(c)).getLastTrackedObjects());
             }
@@ -68,7 +67,7 @@ public class FusionSlamService extends MicroService {
             fusionSlam.decreaseNumberOfSensors();
         }
         if (!fusionSlam.isLeftSensorOn()) {
-            System.out.println("## No sensors found starting writing report to output file");
+            System.out.println("All sensors activity is down, start finishing the program and write report to output file");
             this.terminate();
             fusionSlam.finish(errorReport);
         }

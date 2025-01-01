@@ -1,4 +1,4 @@
-package bgu.spl.mics;
+package bgu.spl.mics.handllers;
 
 import bgu.spl.mics.application.objects.*;
 import com.google.gson.*;

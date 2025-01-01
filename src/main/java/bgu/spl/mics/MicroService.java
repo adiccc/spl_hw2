@@ -87,7 +87,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
         messageCallback.put(type, callback);
-        System.out.println("call back put by "+type);
         MessageBusImpl.getInstance().subscribeBroadcast(type,this);
     }
 
@@ -141,6 +140,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
+        System.out.println("Terminating "+this.name);
         MessageBusImpl.getInstance().unregister(this);
         this.sendBroadcast(new TerminatedBroadcast(this));
         this.terminated=true;
@@ -173,12 +173,11 @@ public abstract class MicroService implements Runnable {
         while (!terminated) {
             try {
                 Message m=MessageBusImpl.getInstance().awaitMessage(this);
-                System.out.println("calling from ->"+m.getClass()+" to -> "+this.getClass());
                 Callback c=null;
 //                    if(m!=null) {
                         c = messageCallback.get(m.getClass());
-                        System.out.println("calling callback -> "+c);
                         if (c!=null)
+                            System.out.println(this.name+" received "+m.getClass().getSimpleName());
                             c.call(m);
 //                    }
             } catch (InterruptedException e) {
