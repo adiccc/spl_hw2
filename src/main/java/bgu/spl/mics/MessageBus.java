@@ -96,7 +96,6 @@ public interface MessageBus {
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
 
-    boolean stopTicks();
     /*for tests*/
     boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b);
     boolean isRegisterToEvent(MicroService m, Class<? extends Event> e);

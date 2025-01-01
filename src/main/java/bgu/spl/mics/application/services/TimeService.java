@@ -7,6 +7,8 @@ import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.StatisticalFolder;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * TimeService acts as the global timer for the system, broadcasting TickBroadcast messages
  * at regular intervals and controlling the simulation's duration.
@@ -16,6 +18,7 @@ public class TimeService extends MicroService {
     private int Duration;
     private int Ticks;
     private StatisticalFolder statFolder;
+    private AtomicBoolean stopTime=new AtomicBoolean(false);
     /**
      * Constructor for TimeService.
      *
@@ -30,33 +33,41 @@ public class TimeService extends MicroService {
         this.Ticks = 1;
         this.statFolder = statFolder;
     }
-
+    public void stopTime(){
+        stopTime.set(true);
+    }
     /**
      * Initializes the TimeService.
      * Starts broadcasting TickBroadcast messages and terminates after the specified duration.
      */
     @Override
     public void initialize() { //was protected changed for tests
-
+        subscribeBroadcast(CrashedBroadcast.class,(CrashedBroadcast c)->this.terminate());
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast broadcast) -> {
             if(broadcast.getSender().getClass().equals(FusionSlamService.class))
                 this.terminate();
         });
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast broadcast) -> {
-            if(MessageBusImpl.getInstance().stopTicks()){
-                terminate();
+            if(this.terminated.get()||Thread.interrupted())
                 return;
-            }
             if (broadcast.getTime() < Duration) {
-                    sendBroadcast(new TickBroadcast(Ticks));
-
-                System.out.println("---time update : " + Ticks);
-                statFolder.setSystemRuntime(this.Ticks);
                 try {
                     Thread.sleep(TickTime);
                 } catch (InterruptedException e) {
                 }
-            } else
+                synchronized (this){
+                    if(!stopTime.get()) {
+                        sendBroadcast(new TickBroadcast(Ticks));
+                        statFolder.setSystemRuntime(this.Ticks);
+                        System.out.println("---time tick " + Ticks);
+                    }
+                    else{
+                        this.terminate();
+                    }
+                    notifyAll();
+                }
+            }
+            else
                 this.terminate();
             this.Ticks++;
         });

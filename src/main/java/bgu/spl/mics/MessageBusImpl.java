@@ -2,8 +2,11 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
+import bgu.spl.mics.application.services.FusionSlamService;
+import bgu.spl.mics.application.services.TimeService;
 import com.google.gson.stream.JsonReader;
 
+import java.sql.Time;
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -59,8 +62,11 @@ public class MessageBusImpl implements MessageBus {
 			for (MicroService t : queue) {
 					synchronized (t){
 						if(microQueues.containsKey(t)){
-            				microQueues.get(t).add(b);
-						}
+							if(t instanceof TimeService && (b instanceof CrashedBroadcast) || (b instanceof TerminatedBroadcast && ((TerminatedBroadcast)b).getSender() instanceof FusionSlamService))
+										((TimeService) t).stopTime();
+							else
+									microQueues.get(t).add(b);
+							System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());}
 						t.notifyAll();
 					}
 			}
@@ -71,7 +77,7 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		System.out.println("Sending event of " + e.getClass().getSimpleName()+" to all registered services");
+		System.out.println("Sending event: " + e);
 		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}
@@ -132,29 +138,21 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
+			Message res=null;
 			if(t!=null) {
-				return t.take();
-			}
-			return null;
-		}
-	public boolean stopTicks(){
-		for(MicroService m : microQueues.keySet()){
-			if(m.getName()=="timer"){
-				synchronized (microQueues.get(m)){
-					for(Message mes:microQueues.get(m)){
-						if(mes.getClass().equals(CrashedBroadcast.class)){
-							return true;
-						}
-						if(mes.getClass().equals(TerminatedBroadcast.class)&&((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam")){
-							return true;
-						}
+				if(m instanceof TimeService){
+					synchronized (m){
+						res= t.take();
+						m.notifyAll();
 					}
-					microQueues.get(m).notifyAll();
 				}
+				else{
+					res=t.take();
+				}
+				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
 			}
+			return res;
 		}
-		return false;
-	}
 	//for test use
 	public boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
 		if (broadcasts.containsKey(b)){
