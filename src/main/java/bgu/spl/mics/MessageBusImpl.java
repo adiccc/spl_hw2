@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import com.google.gson.stream.JsonReader;
 
@@ -14,7 +15,7 @@ import java.util.concurrent.*;
  */
 public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Event>,BlockingQueue<MicroService>> eventsMapping;
-	private ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
+	private volatile ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
 	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
 	private ConcurrentHashMap<Event,Future> eventsFuture;
 	public static CountDownLatch latch;
@@ -141,8 +142,11 @@ public class MessageBusImpl implements MessageBus {
 		for(MicroService m : microQueues.keySet()){
 			if(m.getName()=="timer"){
 				for(Message mes:microQueues.get(m)){
-					if(mes.getClass().equals(TerminatedBroadcast.class)){
-						return ((TerminatedBroadcast) mes).getSender().equals("timer");
+					if(mes.getClass().equals(CrashedBroadcast.class)){
+						return true;
+					}
+					if(mes.getClass().equals(TerminatedBroadcast.class)&&((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam")){
+						return true;
 					}
 				}
 			}

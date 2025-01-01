@@ -44,7 +44,10 @@ public class TimeService extends MicroService {
         });
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast broadcast) -> {
             if (broadcast.getTime() < Duration) {
-                if(!MessageBusImpl.getInstance().stopTicks())
+                if(MessageBusImpl.getInstance().stopTicks()){
+                    terminate();
+                    return;
+                }
                     sendBroadcast(new TickBroadcast(Ticks));
                 statFolder.setSystemRuntime(this.Ticks);
                 try {
