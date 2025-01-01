@@ -22,7 +22,7 @@ public class Camera {
     private int frequency;
     public STATUS status;
     private List<StampedDetectedObjects> detectedObjectList;
-    private List<DetectedObject> lastDetectedObjects;
+    private StampedDetectedObjects lastDetectedObjects;
     private StatisticalFolder statisticalFolder;
 
     public Camera(int id, int frequency,String filePath, StatisticalFolder statisticalFolder) {
@@ -66,13 +66,12 @@ public class Camera {
                 }
             }
             if(this.status!=STATUS.ERROR) {
-//                lastDetectedObjects = l.get(l.size()-1).getDetectedObjects();
+                lastDetectedObjects = l.get(l.size()-1);
                 int sumDetectedObjects=0;
-                lastDetectedObjects=new ArrayList<>();
                 for (StampedDetectedObjects detectedObjects : l) {
                     sumDetectedObjects+=detectedObjects.getDetectedObjects().size();
-                    lastDetectedObjects.addAll(detectedObjects.getDetectedObjects());
                 }
+
                 statisticalFolder.increaseNumDetectedObjects(sumDetectedObjects);
             }
             return events;
@@ -84,7 +83,7 @@ public class Camera {
             String name = "camera" + id;
             this.detectedObjectList= Parser.deserializeCameraData(name,o);
         }
-        public List<DetectedObject> getLastDetectedObjects(){
+        public StampedDetectedObjects getLastDetectedObjects(){
             return lastDetectedObjects;
         }
     }
