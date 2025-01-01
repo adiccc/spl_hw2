@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import com.google.gson.stream.JsonReader;
 
 import java.util.Queue;
@@ -136,7 +137,18 @@ public class MessageBusImpl implements MessageBus {
 			}
 			return null;
 		}
-
+	public boolean stopTicks(){
+		for(MicroService m : microQueues.keySet()){
+			if(m.getName()=="timer"){
+				for(Message mes:microQueues.get(m)){
+					if(mes.getClass().equals(TerminatedBroadcast.class)){
+						return ((TerminatedBroadcast) mes).getSender().equals("timer");
+					}
+				}
+			}
+		}
+		return false;
+	}
 	//for test use
 	public boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
 		if (broadcasts.containsKey(b)){
