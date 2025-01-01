@@ -134,25 +134,18 @@ public class MessageBusImpl implements MessageBus {
 			BlockingQueue<Message> t=microQueues.get(m);
 			if(t!=null) {
 				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
-				return t.take();
+				Message mes=t.take();
+				if(mes.getClass().equals(CrashedBroadcast.class))
+					Thread.currentThread().interrupt();
+				if(mes.getClass().equals(TerminatedBroadcast.class)&&(((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam"))&&m.getName()=="timer")
+					Thread.currentThread().interrupt();
+				if (Thread.currentThread().isInterrupted()) {
+					throw new InterruptedException("Thread was interrupted!");
+				}
+				return mes;
 			}
 			return null;
 		}
-	public boolean stopTicks(){
-		for(MicroService m : microQueues.keySet()){
-			if(m.getName()=="timer"){
-				for(Message mes:microQueues.get(m)){
-					if(mes.getClass().equals(CrashedBroadcast.class)){
-						return true;
-					}
-					if(mes.getClass().equals(TerminatedBroadcast.class)&&((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam")){
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
 	//for test use
 	public boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
 		if (broadcasts.containsKey(b)){
