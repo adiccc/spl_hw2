@@ -182,8 +182,6 @@ public abstract class MicroService implements Runnable {
                             c.call(m);
 //                    }
             } catch (InterruptedException e) {
-                System.out.println("e ");
-                this.terminate();
             }
         }
     }

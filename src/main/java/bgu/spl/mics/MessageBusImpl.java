@@ -2,8 +2,11 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
+import bgu.spl.mics.application.services.FusionSlamService;
+import bgu.spl.mics.application.services.TimeService;
 import com.google.gson.stream.JsonReader;
 
+import java.sql.Time;
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -15,7 +18,7 @@ import java.util.concurrent.*;
  */
 public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Class<? extends Event>,BlockingQueue<MicroService>> eventsMapping;
-	private volatile ConcurrentHashMap<MicroService,BlockingQueue<Message>> microQueues;
+	private volatile ConcurrentHashMap<MicroService,LinkedBlockingDeque <Message>> microQueues;
 	private ConcurrentHashMap<Class<? extends Broadcast>,BlockingQueue<MicroService>> broadcasts;//check if to convert  the queue to Concurrent link list
 	private ConcurrentHashMap<Event,Future> eventsFuture;
 	public static CountDownLatch latch;
@@ -59,7 +62,10 @@ public class MessageBusImpl implements MessageBus {
 			for (MicroService t : queue) {
 					synchronized (t){
 						if(microQueues.containsKey(t)){
-            				microQueues.get(t).add(b);
+							if(t instanceof TimeService && (b instanceof CrashedBroadcast) || (b instanceof TerminatedBroadcast && ((TerminatedBroadcast)b).getSender() instanceof FusionSlamService))
+										((TimeService) t).stopTime();
+							else
+									microQueues.get(t).add(b);
 							System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());}
 						t.notifyAll();
 					}
@@ -101,7 +107,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		System.out.println("Registering MicroService: " + m);
-		microQueues.computeIfAbsent(m, key -> new LinkedBlockingQueue<>());
+		microQueues.computeIfAbsent(m, key -> new LinkedBlockingDeque<>());
 	}
 
 	@Override
@@ -132,19 +138,20 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			BlockingQueue<Message> t=microQueues.get(m);
+			Message res=null;
 			if(t!=null) {
-				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
-				Message mes=t.take();
-				if(mes.getClass().equals(CrashedBroadcast.class))
-					Thread.currentThread().interrupt();
-				if(mes.getClass().equals(TerminatedBroadcast.class)&&(((TerminatedBroadcast) mes).getSender().getName().equals("fusion_slam"))&&m.getName()=="timer")
-					Thread.currentThread().interrupt();
-				if (Thread.currentThread().isInterrupted()) {
-					throw new InterruptedException("Thread was interrupted!");
+				if(m instanceof TimeService){
+					synchronized (m){
+						res= t.take();
+						m.notifyAll();
+					}
 				}
-				return mes;
+				else{
+					res=t.take();
+				}
+				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
 			}
-			return null;
+			return res;
 		}
 	//for test use
 	public boolean isRegisterToBrodcast(MicroService m, Class<? extends Broadcast> b){
