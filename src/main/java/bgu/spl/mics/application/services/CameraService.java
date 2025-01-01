@@ -2,13 +2,10 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
 import bgu.spl.mics.application.messages.DetectedObjectsEvent;
-import bgu.spl.mics.application.objects.Camera;
+import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.DetectedObject;
-import bgu.spl.mics.application.objects.FusionSlam;
-import bgu.spl.mics.application.objects.STATUS;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +70,7 @@ public class CameraService extends MicroService {
             }
         });
             }
-        public List<DetectedObject> getLastDetectedObjects(){
+        public StampedDetectedObjects getLastDetectedObjects(){
             return camera.getLastDetectedObjects();
         }
 }

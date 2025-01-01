@@ -3,6 +3,7 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.objects.DetectedObject;
 import bgu.spl.mics.application.objects.Pose;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class ErrorReport {
 
     private String error;
     private String fualtySensor;
-    private Map<String,List<DetectedObject>> cameraDetection;
+    private Map<String, StampedDetectedObjects> cameraDetection;
     private Map<String,List<TrackedObject>> lidarDetection;
     private PoseEvent[] poses;
 
@@ -31,7 +32,7 @@ public class ErrorReport {
     public void setFualtySensor(String fualtySensor) {
         this.fualtySensor = fualtySensor;
     }
-    public void addDetectedObject(String name, List<DetectedObject> detectedObjects) {
+    public void addDetectedObject(String name, StampedDetectedObjects detectedObjects) {
         this.cameraDetection.put(name,detectedObjects);
     }
     public void addTrackedObject(String name,List<TrackedObject> trackedObject) {
