@@ -65,8 +65,7 @@ public class MessageBusImpl implements MessageBus {
 							if(t instanceof TimeService && (b instanceof CrashedBroadcast) || (b instanceof TerminatedBroadcast && ((TerminatedBroadcast)b).getSender() instanceof FusionSlamService))
 										((TimeService) t).stopTime();
 							else
-									microQueues.get(t).add(b);
-							System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());}
+									microQueues.get(t).add(b);}
 						t.notifyAll();
 					}
 			}
@@ -149,7 +148,7 @@ public class MessageBusImpl implements MessageBus {
 				else{
 					res=t.take();
 				}
-				System.out.println("Waiting for message, Q size : "+t.size()+" - "+ m.getClass().getName());
+				System.out.println("Waiting for message "+ m.getClass().getSimpleName());
 			}
 			return res;
 		}

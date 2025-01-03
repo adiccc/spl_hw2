@@ -66,7 +66,6 @@ public class MessageBusImpl implements MessageBus {
 										((TimeService) t).stopTime();
 							else
 									microQueues.get(t).add(b);
-							System.out.println("^send broadcast to "+t.getClass() +" at Q size : "+microQueues.get(t).size());}
 						t.notifyAll();
 					}
 			}
@@ -77,7 +76,7 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		System.out.println("Sending event: " + e);
+		System.out.println("Sending event: " + e.getClass());
 		if (!eventsMapping.containsKey(e.getClass())) {
 			return null;
 		}

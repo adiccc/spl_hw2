@@ -38,6 +38,8 @@ public class Camera {
         return this.id;
     }
 
+    public STATUS getStatus(){ return this.status; }
+
     public List<DetectedObjectsEvent> Detect(int time) {
         List<StampedDetectedObjects> l = new ArrayList<>();
         List<StampedDetectedObjects> toRemove = new ArrayList<>();
@@ -56,7 +58,6 @@ public class Camera {
                 events.add(new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime()));
                 for(int i=0;i<detectedObjects.getDetectedObjects().size();i++){
                     if(detectedObjects.getDetectedObjects().get(i).getId().equals("ERROR")) {
-                        events.get(i).setDetectedError(detectedObjects.getDetectedObjects().get(i).getDescription());
                         this.status=STATUS.ERROR;
                     }
                 }

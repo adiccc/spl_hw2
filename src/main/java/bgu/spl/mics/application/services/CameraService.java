@@ -43,11 +43,11 @@ public class CameraService extends MicroService {
             List<DetectedObjectsEvent> DetectedObjectsEvents = camera.Detect(t.getTime());
             if (DetectedObjectsEvents != null) {
                 for(DetectedObjectsEvent detectedObjectsEvent : DetectedObjectsEvents) {
-                    if(detectedObjectsEvent.isDetectedError()){
-                        System.out.println("Camera "+camera.getId()+"detected error");
+                    if(camera.getStatus()==STATUS.ERROR){
+                        System.out.println("Camera"+camera.getId()+" detected error");
                         sendBroadcast(new CrashedBroadcast(this,detectedObjectsEvent.getDetectedError()));}
                     else {
-                        System.out.println("Camera "+camera.getId()+"detecting objects");
+                        System.out.println("Camera"+camera.getId()+" detecting objects");
                         Future f = sendEvent(detectedObjectsEvent);
                         futures.put(detectedObjectsEvent, f);
                     }
