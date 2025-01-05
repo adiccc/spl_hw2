@@ -72,6 +72,11 @@ public class TimeService extends MicroService {
             this.Ticks++;
         });
         MessageBusImpl.latch.countDown();
+        try {
+                MessageBusImpl.latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         sendBroadcast(new TickBroadcast(Ticks));
         Ticks++;
     }
