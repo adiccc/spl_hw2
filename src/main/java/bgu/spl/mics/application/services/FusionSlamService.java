@@ -42,7 +42,6 @@ public class FusionSlamService extends MicroService {
      */
     @Override
     public void initialize() {//was protected changed for tests
-        subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {});
         subscribeEvent(TrackedObjectsEvent.class,(TrackedObjectsEvent t) -> fusionSlam.updateMap(t));
         subscribeEvent(PoseEvent.class,(PoseEvent t) -> fusionSlam.updatePose(t));
         subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast c) -> {

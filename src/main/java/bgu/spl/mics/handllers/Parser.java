@@ -144,7 +144,7 @@ public class Parser{
 
                 // Create a Camera object and add it to the list
                 Camera camera = new Camera(id, frequency, cameraDataPath, statisticalFolder);
-                if(camera.status==STATUS.DOWN){
+                if(camera.status==STATUS.ERROR){
                     System.out.println("Error: camera data is invalid");
                     return null;
                 }

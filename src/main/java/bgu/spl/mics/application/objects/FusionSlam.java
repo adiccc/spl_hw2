@@ -26,7 +26,6 @@ public class FusionSlam {
     private String outputPath;
     public AtomicInteger NumberOfSensors;
 
-    //TODO use statisticalFolder.increaseNumLandmarks before we add a new landmark to the map
     // Singleton instance holder
     private static class FusionSlamHolder {
         private static FusionSlam instance=new FusionSlam(null,"");

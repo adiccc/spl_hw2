@@ -80,7 +80,7 @@ public class Camera {
             String name = "camera" + id;
             this.detectedObjectList= Parser.deserializeCameraData(name,o);
             if(this.detectedObjectList==null)
-                this.status=STATUS.DOWN;
+                this.status=STATUS.ERROR;
         }
         public StampedDetectedObjects getLastDetectedObjects(){
             return lastDetectedObjects;
