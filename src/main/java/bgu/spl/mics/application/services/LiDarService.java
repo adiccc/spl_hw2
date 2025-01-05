@@ -47,7 +47,7 @@ public class LiDarService extends MicroService {
         TrackedObjectsEvent e = workerTracker.fetchData(t);
         if (e != null) {
             if(e.isDetectedError())
-                sendBroadcast(new CrashedBroadcast(this,"Sensor Lidar disconnected"));
+                sendBroadcast(new CrashedBroadcast(this,"Sensor Lidar"+workerTracker.getId()+" disconnected"));
             else
                 futures.put(e,sendEvent(e));
         }

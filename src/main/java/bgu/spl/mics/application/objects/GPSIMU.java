@@ -18,7 +18,12 @@ public class GPSIMU {
     public GPSIMU(String filePath) {
         PoseList = new ArrayList<>();
         JsonArray jsonArray = FileHandelUtil.readJsonArray(filePath);
-        this.PoseList= Parser.deserializeGPSData(jsonArray);
+        if(jsonArray != null) {
+            this.PoseList= Parser.deserializeGPSData(jsonArray);
+        }
+        else
+            this.status = STATUS.ERROR;
+
     }
 
     public Pose getPose(int time){
@@ -26,5 +31,9 @@ public class GPSIMU {
             return PoseList.get(time-1);
         }
         return null;
+    }
+
+    public STATUS getStatus(){
+        return status;
     }
 }

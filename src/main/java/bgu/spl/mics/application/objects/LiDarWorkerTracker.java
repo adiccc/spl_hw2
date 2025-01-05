@@ -44,6 +44,7 @@ public class LiDarWorkerTracker {
             }
         return null;
     }
+
     public TrackedObjectsEvent sendTrackedEvent(DetectedObjectsEvent e,int time){//fix with lastTrackedObjects
         StampedDetectedObjects dec=e.getStampedDetectedObjects();
         lastTrackedObjects=new ArrayList<>();
@@ -75,4 +76,5 @@ public class LiDarWorkerTracker {
     public List<TrackedObject> getLastTrackedObjects(){
         return lastTrackedObjects;
     }
+    public int getId(){return id;}
 }

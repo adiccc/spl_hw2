@@ -4,6 +4,7 @@ import bgu.spl.mics.handllers.FileHandelUtil;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
+import bgu.spl.mics.handllers.Parser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -43,44 +44,68 @@ public class GurionRockRunner {
             GPSIMU gpsimu;
             PoseService poseService=null;
 //            String configurationPath=args[0];
-            String configurationPath="./example_input_5/configuration_file.json";
+            String configurationPath="./example_input_errors/configuration_file.json";
             String folderPath=configurationPath.substring(0,configurationPath.length()-23);
             //init fusion slam instance
             FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileHandelUtil.readJsonObject(configurationPath);
-            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input_5/configuration_file.json");
+            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input_errors/configuration_file.json");
             Set<String> keys = rootObject.keySet();
-            int ThreadCounter=0;
             for (String key : keys) {
                 JsonElement element = rootObject.get(key);
 
                 switch (key) {
                     case "Cameras":
-                        cameras=handleCameras(element.getAsJsonObject(),statisticalFolder,folderPath);
+                        cameras= Parser.handleCameras(element.getAsJsonObject(),statisticalFolder,folderPath);
+                        if(cameras==null || cameras.size()==0){
+                            System.out.println("Cameras configuration failed, closing the program");
+                            return;
+                        }
                         camerasServices=handelCamerasService(cameras);
                         break;
 
                     case "LiDarWorkers":
-                        liDarWorkerTrackers=handleLidarWorkers(element.getAsJsonObject(),statisticalFolder,folderPath);
+                        liDarWorkerTrackers=Parser.handleLidarWorkers(element.getAsJsonObject(),statisticalFolder,folderPath);
+                        if(liDarWorkerTrackers==null || liDarWorkerTrackers.isEmpty()){
+                            System.out.println("Lidar worker configuration failed, closing the program");
+                            return;
+                        }
                         liDarServices=handelLidarService(liDarWorkerTrackers);
                         break;
 
                     case "poseJsonFile":
+                        if(element.getAsString().length()<3){
+                            System.out.println("GPS file path is missing - configuration failed, closing the program");
+                            return;
+                        }
                         gpsimu=new GPSIMU(folderPath+element.getAsString().substring(1));
+                        if(gpsimu.getStatus()==STATUS.ERROR){
+                            System.out.println("GPS configuration failed, closing the program");
+                            return;
+                        }
                         poseService=new PoseService(gpsimu);
                         break;
 
                     case "TickTime":
-                        tickTime=element.getAsInt();
+                        tickTime=Parser.parseInt(element);
+                        if(tickTime==-1){
+                            System.out.println("Time ticktime configuration is out of range  or wrong type value, closing the program");
+                            return;
+                        }
                         break;
 
                     case "Duration":
-                        duration=element.getAsInt();
+                        duration=Parser.parseInt(element);
+                        if(duration<=0){
+                            System.out.println("Time duration configuration is out of range or wrong type value, closing the program");
+                            return;
+                        }
                         break;
 
                     default:
-                        System.out.println("Recognise unknown key: " + key);
+                        System.out.println("Recognise unknown key: " + key+", closing the program");
+                        return;
                 }
             }
             timeService=new TimeService(tickTime,duration,statisticalFolder);
@@ -118,30 +143,6 @@ public class GurionRockRunner {
         return liDarServices;
     }
 
-    private static List<LiDarWorkerTracker> handleLidarWorkers(JsonObject jsonObject,StatisticalFolder statisticalFolder,String folderPath) {
-        List<LiDarWorkerTracker> liDarWorkerTrackers = new ArrayList<>();
-        int index=1;
-        // Extract the CamerasConfigurations array
-        JsonArray workersConfig = jsonObject.getAsJsonArray("LidarConfigurations");
-
-        // Get the lidar database file path
-        String filePath=folderPath+jsonObject.get("lidars_data_path").getAsString().substring(2);
-        LiDarDataBase.getInstance(filePath).setPath(filePath);
-
-        // Iterate through the cameras configurations
-        for (JsonElement lidarElement : workersConfig) {
-            JsonObject lidarObj = lidarElement.getAsJsonObject();
-
-            // Extract lidar properties
-            int id = lidarObj.get("id").getAsInt();
-            int frequency = lidarObj.get("frequency").getAsInt();
-
-            // Create a Camera object and add it to the list
-            LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency,filePath,statisticalFolder);
-            liDarWorkerTrackers.add(lidar);
-        }
-        return liDarWorkerTrackers;
-    }
 
     public static List<CameraService> handelCamerasService(List<Camera> cameras) {
         List<CameraService> camerasServices = new ArrayList<>();
@@ -153,28 +154,6 @@ public class GurionRockRunner {
         return camerasServices;
     }
 
-    public static List<Camera> handleCameras(JsonObject jsonObject, StatisticalFolder statisticalFolder,String folderPath) {
-        List<Camera> cameras = new ArrayList<>();
 
-        // Extract the CamerasConfigurations array
-        JsonArray camerasConfig = jsonObject.getAsJsonArray("CamerasConfigurations");
-
-        // Get the camera data file path
-        String cameraDataPath = folderPath+jsonObject.get("camera_datas_path").getAsString().substring(2);
-
-        // Iterate through the cameras configurations
-        for (JsonElement cameraElement : camerasConfig) {
-            JsonObject cameraObj = cameraElement.getAsJsonObject();
-
-            // Extract camera properties
-            int id = cameraObj.get("id").getAsInt();
-            int frequency = cameraObj.get("frequency").getAsInt();
-
-            // Create a Camera object and add it to the list
-            Camera camera = new Camera(id, frequency, cameraDataPath,statisticalFolder);
-            cameras.add(camera);
-        }
-        return cameras;
-    }
 
 }
