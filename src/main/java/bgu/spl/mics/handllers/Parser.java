@@ -80,10 +80,12 @@ public class Parser{
                     Type objectListType = new TypeToken<List<StampedDetectedObjects>>() {
                     }.getType();
                     result = gson.fromJson(cameraData, objectListType);
+
                 }catch (Exception e){
                     System.out.println("Error: invalid camera data structure");
                     return null;
                 }
+                return result;
             }
             return null;
 
@@ -190,7 +192,7 @@ public class Parser{
         // Get the lidar database file path
         String filePath = folderPath + jsonObject.get("lidars_data_path").getAsString().substring(2);
         LiDarDataBase.getInstance(filePath).setPath(filePath);
-        if(LiDarDataBase.getInstance(filePath).isDataInitValid()){
+        if(!LiDarDataBase.getInstance(filePath).isDataInitValid()){
             System.out.println("Error: lidars_data_base got wrong input.");
             return null;
         }

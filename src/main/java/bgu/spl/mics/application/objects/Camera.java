@@ -55,12 +55,14 @@ public class Camera {
         if (l.size() > 0){
             List<DetectedObjectsEvent> events=new ArrayList<>();
             for (StampedDetectedObjects detectedObjects : l) {
-                events.add(new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime()));
+                DetectedObjectsEvent currentEvent=new DetectedObjectsEvent(detectedObjects.getDetectedObjects(), detectedObjects.getTime());
                 for(int i=0;i<detectedObjects.getDetectedObjects().size();i++){
                     if(detectedObjects.getDetectedObjects().get(i).getId().equals("ERROR")) {
                         this.status=STATUS.ERROR;
+                        currentEvent.setDetectedError(detectedObjects.getDetectedObjects().get(i).getDescription());
                     }
                 }
+                events.add(currentEvent);
             }
             if(this.status!=STATUS.ERROR) {
                 lastDetectedObjects = l.get(l.size()-1);
@@ -68,7 +70,6 @@ public class Camera {
                 for (StampedDetectedObjects detectedObjects : l) {
                     sumDetectedObjects+=detectedObjects.getDetectedObjects().size();
                 }
-
                 statisticalFolder.increaseNumDetectedObjects(sumDetectedObjects);
             }
             return events;

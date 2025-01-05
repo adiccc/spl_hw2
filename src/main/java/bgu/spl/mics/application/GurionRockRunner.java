@@ -44,13 +44,13 @@ public class GurionRockRunner {
             GPSIMU gpsimu;
             PoseService poseService=null;
 //            String configurationPath=args[0];
-            String configurationPath="./example_input_errors/configuration_file.json";
+            String configurationPath="./lastUpdatedExample/lastExample_2/configuration_file.json";
             String folderPath=configurationPath.substring(0,configurationPath.length()-23);
             //init fusion slam instance
             FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
 //            JsonObject rootObject = FileHandelUtil.readJsonObject(configurationPath);
-            JsonObject rootObject = FileHandelUtil.readJsonObject("./example_input_errors/configuration_file.json");
+            JsonObject rootObject = FileHandelUtil.readJsonObject("./lastUpdatedExample/lastExample_2/configuration_file.json");
             Set<String> keys = rootObject.keySet();
             for (String key : keys) {
                 JsonElement element = rootObject.get(key);
