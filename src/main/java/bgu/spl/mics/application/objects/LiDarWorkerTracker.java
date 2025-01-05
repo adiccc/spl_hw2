@@ -35,14 +35,17 @@ public class LiDarWorkerTracker {
     public boolean isLeftData(int time){
         return LiDarDataBase.getInstance(filePath).isLeftData(time);
     }
-    public TrackedObjectsEvent fetchData(TickBroadcast t){
+    public List<TrackedObjectsEvent> fetchData(TickBroadcast t){
+        List<TrackedObjectsEvent> res =new ArrayList<>();
+        List<DetectedObjectsEvent> toRemove = new ArrayList<>();
         for(DetectedObjectsEvent e: detectedEvents){
                 if(e.getStampedDetectedObjects().getTime()+frequency<=t.getTime()){
-                    detectedEvents.remove(e);
-                    return sendTrackedEvent(e,e.getStampedDetectedObjects().getTime());
+                    toRemove.add(e);
+                    res.add(sendTrackedEvent(e,e.getStampedDetectedObjects().getTime()));
                 }
             }
-        return null;
+        detectedEvents.removeAll(toRemove);
+        return res;
     }
 
     public TrackedObjectsEvent sendTrackedEvent(DetectedObjectsEvent e,int time){//fix with lastTrackedObjects

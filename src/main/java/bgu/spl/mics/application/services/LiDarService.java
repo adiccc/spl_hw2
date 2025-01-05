@@ -44,12 +44,14 @@ public class LiDarService extends MicroService {
     @Override
     public void initialize() {//was protected changed for tests
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast t) -> {
-        TrackedObjectsEvent e = workerTracker.fetchData(t);
-        if (e != null) {
+        List<TrackedObjectsEvent> events = workerTracker.fetchData(t);
+        for(TrackedObjectsEvent e : events){
+            if (e != null) {
             if(e.isDetectedError())
                 sendBroadcast(new CrashedBroadcast(this,"Sensor Lidar"+workerTracker.getId()+" disconnected"));
             else
                 futures.put(e,sendEvent(e));
+        }
         }
         if(!workerTracker.isLeftData(t.getTime()))
             this.terminate();

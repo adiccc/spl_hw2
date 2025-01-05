@@ -29,11 +29,13 @@ public class LandMark {
     }
     public void UpdatePoints(List<CloudPoint> point) {
         List<CloudPoint> newCoordinates = new ArrayList<CloudPoint>();
-        for(int i=0;i<point.size();i++) {
-            if(Coordinates.size()>i)
+        for(int i=0;i<Math.max(Coordinates.size(),point.size());i++) {
+            if(Coordinates.size()-1>=i&&point.size()-1>=i)
                 newCoordinates.add(new CloudPoint((point.get(i).getX()+Coordinates.get(i).getX())/2,(point.get(i).getY()+Coordinates.get(i).getY())/2));
+            else if(point.size()-1>=i)
+                 newCoordinates.add(point.get(i));
             else{
-                newCoordinates.add(point.get(i));
+                newCoordinates.add(Coordinates.get(i));
             }
             }
         Coordinates=newCoordinates;
