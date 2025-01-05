@@ -22,12 +22,12 @@ public class Camera {
     private StatisticalFolder statisticalFolder;
 
     public Camera(int id, int frequency,String filePath, StatisticalFolder statisticalFolder) {
+        this.status=STATUS.UP;
         this.id = id;
         this.frequency = frequency;
         initDetectedObjects(filePath);
         this.statisticalFolder = statisticalFolder;
         this.lastDetectedObjects = null;
-        this.status=STATUS.UP;
     }
 
     public boolean isLeftData(){
@@ -79,6 +79,8 @@ public class Camera {
             JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
             this.detectedObjectList= Parser.deserializeCameraData(name,o);
+            if(this.detectedObjectList==null)
+                this.status=STATUS.DOWN;
         }
         public StampedDetectedObjects getLastDetectedObjects(){
             return lastDetectedObjects;

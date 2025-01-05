@@ -11,26 +11,55 @@ import java.util.List;
 public class Parser{
 
         private static CloudPoint deserializeCloudPoints(JsonArray context) {
-            double x = context.get(0).getAsDouble();
-            double y = context.get(1).getAsDouble();
-            return new CloudPoint(x, y);
+            if (context != null
+                    && context.size() >= 2
+                    && context.get(0).isJsonPrimitive() && context.get(0).getAsJsonPrimitive().isNumber()
+                    && context.get(1).isJsonPrimitive() && context.get(1).getAsJsonPrimitive().isNumber()) {
+                double x = context.get(0).getAsDouble();
+                double y = context.get(1).getAsDouble();
+                return new CloudPoint(x, y);
+            }
+            else{
+                System.out.println("Error: invalid cloud points structure");
+                return null;
+            }
+
         }
 
-        public static StampedCloudPoints deserializeStampedCloudPoints(JsonObject context) {
-            List<CloudPoint> cloudPoints = new ArrayList<>();
-            String id=context.get("id").getAsString();
-            int time=context.get("time").getAsInt();
+    public static StampedCloudPoints deserializeStampedCloudPoints(JsonObject context) {
+        // Validate input structure
+        if (context == null
+                || !context.has("id") || !context.get("id").isJsonPrimitive() || !context.get("id").getAsJsonPrimitive().isString()
+                || !context.has("time") || !context.get("time").isJsonPrimitive() || !context.get("time").getAsJsonPrimitive().isNumber()
+                || !context.has("cloudPoints") || !context.get("cloudPoints").isJsonArray()) {
+           System.out.println("Error: invalid cloud points structure");
+           return null;
+        }
 
-            JsonArray jsonArray = context.get("cloudPoints").getAsJsonArray();
-                // Iterate through each JSON object in the array
-                for (JsonElement element : jsonArray) {
-                    JsonArray point = element.getAsJsonArray();
-                    cloudPoints.add(deserializeCloudPoints(point));
+        // Extract and process data
+        String id = context.get("id").getAsString();
+        int time = context.get("time").getAsInt();
+        JsonArray jsonArray = context.get("cloudPoints").getAsJsonArray();
+
+        List<CloudPoint> cloudPoints = new ArrayList<>();
+        try {
+            for (JsonElement element : jsonArray) {
+                if (!element.isJsonArray()) {
+                    System.out.println("Error: invalid cloud points structure");
+                    return null;
                 }
-            return new StampedCloudPoints(id,time,cloudPoints);
+                JsonArray point = element.getAsJsonArray();
+                cloudPoints.add(deserializeCloudPoints(point));
+            }
+        } catch (Exception e) {
+            System.out.println("Error: invalid cloud points structure");
+            return null;
         }
+        return new StampedCloudPoints(id, time, cloudPoints);
+    }
 
-        public static List<StampedCloudPoints> deserializeDataBase(JsonArray context) {
+
+    public static List<StampedCloudPoints> deserializeDataBase(JsonArray context) {
             List<StampedCloudPoints> database = new ArrayList<>();
             for (JsonElement element : context) {
                 JsonObject row = element.getAsJsonObject();
@@ -43,12 +72,18 @@ public class Parser{
 
             // Check if the camera exists in the JSON object
             if (o.has(name)) {
+                List<StampedDetectedObjects> result=null;
                 Gson gson = new Gson();
                 List<StampedDetectedObjects> detectedObjectList = new ArrayList<>();
                 JsonArray cameraData = o.getAsJsonArray(name);
-
-                Type objectListType = new TypeToken<List<StampedDetectedObjects>>() {}.getType();
-                return gson.fromJson(cameraData, objectListType);
+                try {
+                    Type objectListType = new TypeToken<List<StampedDetectedObjects>>() {
+                    }.getType();
+                    result = gson.fromJson(cameraData, objectListType);
+                }catch (Exception e){
+                    System.out.println("Error: invalid camera data structure");
+                    return null;
+                }
             }
             return null;
 
@@ -109,9 +144,14 @@ public class Parser{
 
                 // Create a Camera object and add it to the list
                 Camera camera = new Camera(id, frequency, cameraDataPath, statisticalFolder);
+                if(camera.status==STATUS.DOWN){
+                    System.out.println("Error: camera data is invalid");
+                    return null;
+                }
                 cameras.add(camera);
             } catch (Exception e) {
                 System.out.println("Error: Failed to parse camera properties cause of an incorrect structure input.");
+                return null;
             }
         }
         return cameras;
@@ -150,6 +190,10 @@ public class Parser{
         // Get the lidar database file path
         String filePath = folderPath + jsonObject.get("lidars_data_path").getAsString().substring(2);
         LiDarDataBase.getInstance(filePath).setPath(filePath);
+        if(LiDarDataBase.getInstance(filePath).isDataInitValid()){
+            System.out.println("Error: lidars_data_base got wrong input.");
+            return null;
+        }
 
         // Iterate through the lidar configurations
         for (JsonElement lidarElement : workersConfig) {

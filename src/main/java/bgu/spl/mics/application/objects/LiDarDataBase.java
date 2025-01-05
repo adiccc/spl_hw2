@@ -43,7 +43,15 @@ public class LiDarDataBase {
 
     private void initLidarData(String filePath){
         JsonArray jsonArray = FileHandelUtil.readJsonArray(filePath);
-        this.cloudPoints=Parser.deserializeDataBase(jsonArray);
+        if(jsonArray!=null&&jsonArray.size()>0){
+            this.cloudPoints=Parser.deserializeDataBase(jsonArray);
+        }
+        else
+            this.cloudPoints=null;
+    }
+
+    public boolean isDataInitValid(){
+        return cloudPoints!=null;
     }
 
     public StampedCloudPoints getCloudPoint(DetectedObject d,int time) {
