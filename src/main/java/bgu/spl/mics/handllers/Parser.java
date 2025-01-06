@@ -128,7 +128,7 @@ public class Parser{
         for (JsonElement cameraElement : camerasConfig) {
             if (!cameraElement.isJsonObject()) {
                 System.out.println("Error: An element in CamerasConfigurations is not a valid object.");
-                continue; // Skip this element and proceed to the next one
+                return null;
             }
 
             JsonObject cameraObj = cameraElement.getAsJsonObject();
@@ -136,7 +136,7 @@ public class Parser{
             // Check for the required properties
             if (!cameraObj.has("id") || !cameraObj.has("frequency")) {
                 System.out.println("Error: Camera object is missing required properties (id, frequency).");
-                continue; // Skip this element and proceed to the next one
+                return null;
             }
 
             try {
@@ -201,7 +201,7 @@ public class Parser{
         for (JsonElement lidarElement : workersConfig) {
             if (!lidarElement.isJsonObject()) {
                 System.out.println("Error: An element in LidarConfigurations is not a valid object.");
-                continue; // Skip this element and proceed to the next one
+                return null;
             }
 
             JsonObject lidarObj = lidarElement.getAsJsonObject();
@@ -209,7 +209,7 @@ public class Parser{
             // Check for the required properties
             if (!lidarObj.has("id") || !lidarObj.has("frequency")) {
                 System.out.println("Error: Lidar object is missing required properties (id, frequency).");
-                continue; // Skip this element and proceed to the next one
+                return null;
             }
 
             try {
