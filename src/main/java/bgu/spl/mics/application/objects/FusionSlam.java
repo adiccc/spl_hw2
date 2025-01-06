@@ -139,7 +139,7 @@ public class FusionSlam {
             result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+",\"ErrorReprot\":"+jsonReport+"}";
         } else
             result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+"}";
-        FileHandelUtil.writeJson(result, this.outputPath+"/output_file.json");
+        FileHandelUtil.writeJson(result, this.outputPath+"output_file.json");
     }
     public void finish(ErrorReport errorReport){
         if(errorReport.getError().equals("noErrorDetected"))

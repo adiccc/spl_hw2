@@ -77,6 +77,7 @@ public class Camera {
         return null;
     }
         private void initDetectedObjects (String path){
+            System.out.println(path);
             JsonObject o = FileHandelUtil.readJsonObject(path);
             String name = "camera" + id;
             this.detectedObjectList= Parser.deserializeCameraData(name,o);
