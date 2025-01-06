@@ -26,7 +26,6 @@ public class StatisticalFolder {
         this.numTrackedObjects.addAndGet(numTrackedObjects);
     }
     public void increaseNumLandmarks(int numLandmarks) {
-        System.out.println("numLandMark"+numLandmarks);
         this.numLandmarks.addAndGet(numLandmarks);
     }
     public void setSystemRuntime(int systemRuntime) {
