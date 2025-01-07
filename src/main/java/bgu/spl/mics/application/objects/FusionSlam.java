@@ -132,16 +132,21 @@ public class FusionSlam {
         Gson gson = new Gson();
         // Serialize each object to JSON
         String jsonFolder = gson.toJson(statisticalFolder);
-        String jsonLand = gson.toJson(landMarks);
         String result;
+        String fileName="";
         if(errorReport!=null){
             String jsonReport = gson.toJson(errorReport);
-            result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+",\"ErrorReprot\":"+jsonReport+"}";
-        } else
-            result ="{\"Statistic Folder\":"+jsonFolder+",\"LandMarks\":"+jsonLand+"}";
-        FileHandelUtil.writeJson(result, this.outputPath+"output_file.json");
+            jsonReport=jsonReport.substring(1, jsonReport.length()-1);
+            result ="{"+jsonReport+",\"statistics\":"+jsonFolder+"}";
+            fileName="OutputError.json";
+        } else {
+            result = "{\"statistics\":" + jsonFolder + "}";
+            fileName = "Output.json";
+        }
+        FileHandelUtil.writeJson(result, this.outputPath+fileName);
     }
     public void finish(ErrorReport errorReport){
+        statisticalFolder.setLandmarks(landMarks);
         if(errorReport.getError().equals("noErrorDetected"))
             createOutputFile(null);
         else{

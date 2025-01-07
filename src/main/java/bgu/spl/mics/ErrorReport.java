@@ -14,16 +14,16 @@ public class ErrorReport {
 
     private String error;
     private String fualtySensor;
-    private Map<String, StampedDetectedObjects> cameraDetection;
-    private Map<String,List<TrackedObject>> lidarDetection;
-    private PoseEvent[] poses;
+    private Map<String, StampedDetectedObjects> lastCameraFrames;
+    private Map<String,List<TrackedObject>> lastLidarFrames;
+    private Pose[] poses;
 
     public ErrorReport(String error, String fualtySensor) {
         this.error = error;
         this.fualtySensor = fualtySensor;
-        this.cameraDetection = new HashMap<>();
-        this.poses = null;
-        this.lidarDetection =new HashMap<>();
+        this.lastCameraFrames = new HashMap<>();
+        this.poses=null;
+        this.lastLidarFrames =new HashMap<>();
     }
 
     public void setError(String error) {
@@ -33,14 +33,20 @@ public class ErrorReport {
         this.fualtySensor = fualtySensor;
     }
     public void addDetectedObject(String name, StampedDetectedObjects detectedObjects) {
-        this.cameraDetection.put(name,detectedObjects);
+        this.lastCameraFrames.put(name,detectedObjects);
     }
     public void addTrackedObject(String name,List<TrackedObject> trackedObject) {
-        this.lidarDetection.put(name,trackedObject);
+        this.lastLidarFrames.put(name,trackedObject);
     }
     public void setPoses(List<PoseEvent> poses) {
-        this.poses = poses.toArray(new PoseEvent[poses.size()]);
+        this.poses=new Pose[poses.size()];
+        int i=0;
+        for (PoseEvent pose : poses) {
+            this.poses[i]=pose.getPose();
+            i++;
+        }
     }
+
     public String getError() {
         return this.error;
     }

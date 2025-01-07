@@ -1,5 +1,8 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -12,11 +15,13 @@ public class StatisticalFolder {
     private AtomicInteger numDetectedObjects;
     private AtomicInteger numTrackedObjects;
     private AtomicInteger numLandmarks;
+    private Map<String,LandMark> landmarks;
     public StatisticalFolder() {
         this.systemRuntime = new AtomicInteger(0);
         this.numDetectedObjects = new AtomicInteger(0);
         this.numTrackedObjects = new AtomicInteger(0);
         this.numLandmarks = new AtomicInteger(0);
+        this.landmarks = new HashMap<>();
     }
 
     public void increaseNumDetectedObjects(int numDetectedObjects) {
@@ -32,8 +37,9 @@ public class StatisticalFolder {
         this.systemRuntime.set(systemRuntime);
     }
 
-    public String toString(){
-        return "StatisticalFolder{"+"systemRuntime="+systemRuntime+", numDetectedObjects="+numDetectedObjects+", numTrackedObjects="+numTrackedObjects+", numLandmarks="+numLandmarks+"}";
+    public void setLandmarks(ArrayList<LandMark> landmarks) {
+       for(LandMark landmark : landmarks) {
+           this.landmarks.put(landmark.getId(),landmark);
+       }
     }
-
 }
