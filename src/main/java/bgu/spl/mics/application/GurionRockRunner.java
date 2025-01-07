@@ -31,8 +31,7 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
     public static void main(String[] args) {
-//        if(args.length>0){
-        if(true){
+        if(args.length>0){
             StatisticalFolder statisticalFolder = new StatisticalFolder();
             List<Camera> cameras = new ArrayList<>();
             List<CameraService> camerasServices = new ArrayList<>();
@@ -43,14 +42,12 @@ public class GurionRockRunner {
             TimeService timeService;
             GPSIMU gpsimu;
             PoseService poseService=null;
-//            String configurationPath=args[0];
-            String configurationPath="./lastUpdatedExample/lastExample_2/configuration_file.json";
+            String configurationPath=args[0];
             String folderPath=configurationPath.substring(0,configurationPath.length()-23);
             //init fusion slam instance
             FusionSlam.getInstance().initInstance(statisticalFolder,folderPath);
             FusionSlamService fusionSlamService=new FusionSlamService(FusionSlam.getInstance());
-//            JsonObject rootObject = FileHandelUtil.readJsonObject(configurationPath);
-            JsonObject rootObject = FileHandelUtil.readJsonObject("./lastUpdatedExample/lastExample_2/configuration_file.json");
+            JsonObject rootObject = FileHandelUtil.readJsonObject(configurationPath);
             Set<String> keys = rootObject.keySet();
             for (String key : keys) {
                 JsonElement element = rootObject.get(key);
